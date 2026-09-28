@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>崇祯四百年谱 · 大楚职官志</title>
+<style>
+  :root{
+    --parchment:#f0e3c2; --parchment-2:#e8d5a8;
+    --ink:#2a1e10; --ink-2:#4a3522; --gold:#a37c44;
+    --shadow:rgba(60,40,20,0.25);
+    --orig:#2a1e10; --supl:#7a5a30; --supl-bg:#e6d5a8;
+    --rev:#7a2f1e; --rev-bg:#f0d9c8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:"楷体","KaiTi","STKaiti","Noto Serif SC",serif;color:var(--ink)}
+  body{background:radial-gradient(ellipse at center top,#f4e7c4 0%,#e6d5ad 50%,#d4bf94 100%);overflow:hidden}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.10  0 0 0 0 0.05  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode:multiply;opacity:.5}
+
+  #header{position:fixed;top:0;left:0;right:0;z-index:10;height:60px;
+    background:linear-gradient(180deg,#f4e7c4 0%,#e6d5ad 100%);
+    border-bottom:2px solid var(--ink);display:flex;align-items:center;padding:0 18px;gap:16px;
+    box-shadow:0 2px 8px var(--shadow)}
+  #header h1{font-size:20px;font-weight:bold;letter-spacing:.28em;white-space:nowrap}
+  #header .subtitle{font-size:11px;color:var(--ink-2);letter-spacing:.14em;border-left:1px solid var(--ink-2);padding-left:12px;line-height:1.5}
+  #header .right{margin-left:auto;display:flex;gap:12px;align-items:center;font-size:12px}
+  #header input[type=text]{width:200px;padding:6px 9px;font-family:inherit;font-size:13px;
+    border:1.5px solid var(--ink-2);background:rgba(255,250,230,.7);color:var(--ink)}
+  .legend-tag{display:inline-block;padding:1px 7px;border:1px solid var(--ink-2);font-size:11px}
+  .legend-tag.orig{background:#f4e7c4;color:var(--orig)}
+  .legend-tag.supl{background:var(--supl-bg);color:var(--supl);font-style:italic}
+  .legend-tag.rev{background:var(--rev-bg);color:var(--rev);font-weight:bold}
+
+  #main{position:absolute;top:60px;left:0;right:0;bottom:0;display:flex;z-index:1}
+  #left{width:46%;min-width:360px;border-right:2px solid var(--ink);
+    background:rgba(244,231,196,.55);display:flex;flex-direction:column}
+  #tabs{display:flex;flex-wrap:wrap;border-bottom:1.5px solid var(--ink);background:rgba(232,213,168,.7)}
+  #tabs button{flex:1 0 auto;padding:8px 6px;font-family:inherit;font-size:13px;font-weight:bold;letter-spacing:.12em;
+    background:transparent;border:none;cursor:pointer;color:var(--ink-2);border-bottom:3px solid transparent;transition:.15s}
+  #tabs button.active{color:var(--ink);border-bottom-color:var(--gold);background:rgba(244,231,196,.6)}
+  #tabs button:hover{background:rgba(244,231,196,.5)}
+
+  .pane{flex:1;overflow:auto;padding:14px 16px;display:none}
+  .pane.active{display:block}
+  .pane h2{font-size:17px;letter-spacing:.2em;border-bottom:1px dashed var(--ink-2);padding-bottom:6px;margin-bottom:10px}
+  .pane h3{font-size:14px;margin:16px 0 6px;color:var(--ink);border-left:3px solid var(--gold);padding-left:8px;letter-spacing:.08em}
+  .pane p{font-size:13px;line-height:1.85;margin:6px 0;text-align:justify}
+  .pane ul{margin:6px 0 6px 20px;font-size:13px;line-height:1.8}
+  .quote{border-left:3px double var(--gold);padding:6px 12px;margin:10px 0;background:rgba(255,250,230,.5);font-size:13px;line-height:1.9}
+  .quote b{color:var(--rev)}
+
+  table.t{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+  table.t th{background:rgba(163,124,68,.22);border:1px solid var(--ink-2);padding:5px 7px;text-align:left;letter-spacing:.06em}
+  table.t td{border:1px solid rgba(74,53,34,.45);padding:5px 7px;vertical-align:top;line-height:1.65}
+  table.t tr:nth-child(even) td{background:rgba(255,250,230,.35)}
+  .k{color:var(--rev);font-weight:bold}
+
+  .tree-node{font-size:14px;line-height:1.7}
+  .tree-row{display:flex;align-items:center;cursor:pointer;padding:3px 4px}
+  .tree-row:hover{background:rgba(180,140,80,.18)}
+  .tree-row.selected{background:rgba(180,140,80,.32);font-weight:bold}
+  .tree-toggle{width:18px;text-align:center;color:var(--ink-2);font-size:12px;user-select:none}
+  .tree-name{flex:1}
+  .tree-rank{color:var(--ink-2);font-size:11px;margin-left:6px;letter-spacing:.08em}
+  .tree-tag{font-size:10px;color:#fff;background:var(--gold);padding:0 4px;margin-left:6px}
+  .tree-children{margin-left:16px;border-left:1px dotted rgba(74,53,34,.4);padding-left:4px}
+  .tree-children.collapsed{display:none}
+
+  #detail{flex:1;overflow:auto;padding:22px 28px;background:rgba(248,238,212,.5)}
+  #detail h2{font-size:24px;letter-spacing:.22em;margin-bottom:4px}
+  #detail .meta{font-size:12px;color:var(--ink-2);letter-spacing:.12em;margin-bottom:8px}
+  #detail .path{font-size:11px;color:var(--ink-2);margin-bottom:12px}
+  #detail .path span::after{content:" › "}
+  #detail .path span:last-child::after{content:""}
+  #detail .desc{font-size:13.5px;line-height:1.95;background:rgba(255,250,230,.6);
+    border-left:3px solid var(--gold);padding:9px 13px;margin-bottom:14px;text-align:justify}
+  #detail h3{font-size:15px;margin:16px 0 6px;letter-spacing:.12em;border-bottom:1px dashed var(--ink-2);padding-bottom:4px}
+  table.officer-table{width:100%;border-collapse:collapse;font-size:13px}
+  table.officer-table th{background:rgba(163,124,68,.25);border:1px solid var(--ink-2);padding:5px 8px;text-align:left}
+  table.officer-table td{border:1px solid rgba(74,53,34,.4);padding:5px 8px;vertical-align:top;line-height:1.6}
+  tr.supl td{color:var(--supl);font-style:italic;background:rgba(230,213,168,.35)}
+  tr.rev td{color:var(--rev);background:rgba(240,217,200,.5)}
+  body.hide-supl tr.supl{display:none}
+  .col-name{width:32%}.col-rank{width:16%;white-space:nowrap}.col-role{width:8%;text-align:center}
+  .sub-children{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+  .sub-child{border:1px solid var(--ink-2);padding:7px 9px;cursor:pointer;background:rgba(255,250,230,.55)}
+  .sub-child:hover{background:rgba(180,140,80,.2)}
+  .sc-name{font-weight:bold;font-size:14px}
+  .sc-meta{font-size:10.5px;color:var(--ink-2);margin-top:2px}
+  .sc-desc{font-size:11px;color:var(--ink-2);margin-top:4px;line-height:1.5}
+  .today{display:inline-block;background:rgba(122,47,30,.12);border:1px solid rgba(122,47,30,.5);
+    color:var(--rev);font-size:11px;padding:1px 6px;margin-left:8px}
+</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='6' fill='%23a63a2b'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f5efe3' font-family='serif'%3E%E6%98%8E%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<div id="header">
+  <h1>大楚职官志</h1>
+  <div class="subtitle">三公・三省・八部・十二寺・御史台・枢密院・五军・四海<br>部寺平行 · 民评考课 · 兵柄三线 · 殿阁七等</div>
+  <div class="right">
+    <span class="legend-tag orig">原</span>
+    <span class="legend-tag supl">补</span>
+    <span class="legend-tag rev">修</span>
+    <label><input type="checkbox" id="hide-supl"> 只看原设定</label>
+    <input type="text" id="search" placeholder="搜索官名 / 衙门">
+  </div>
+</div>
+
+<div id="main">
+  <div id="left">
+    <div id="tabs">
+      <button data-tab="tree" class="active">职官树</button>
+      <button data-tab="today">今制对照</button>
+      <button data-tab="rank">品阶勋爵</button>
+      <button data-tab="tang">政事堂</button>
+      <button data-tab="kao">考课选举</button>
+      <button data-tab="bing">兵　柄</button>
+    </div>
+
+    <div class="pane active" id="pane-tree"></div>
+
+    <div class="pane" id="pane-today">
+      <h2>今制对照</h2>
+      <p><b>本朝八部与十二寺，品秩相同，并列而不相统属。</b>八部尚书正二位，十二寺卿正二位——唐制六部尚书正三品、九寺卿从三品，寺低一等，故唐"部主政令、寺主事务"；本朝品级既平，则八部为综合政务之衙，十二寺为专业事业之衙，<b>二十衙并列</b>。</p>
+      <div class="quote">佐证在监察：御史台台院统「八部十二卿共二十科都给事中」，一衙一科。自立制之初，即以二十个平行衙门待之。<br><b>行文之则：八部与十二寺互为平行，行文用「移」，不用「下」。</b></div>
+
+      <h3>八部</h3>
+      <table class="t"><tr><th>部</th><th>今</th><th>四司</th></tr>
+        <tr><td>吏部</td><td class="k">人事部</td><td>文选（选任）・考功（考课）・稽勋（勋劳）・吏部（官籍）</td></tr>
+        <tr><td>户部</td><td class="k">财政部</td><td>户部（赋税）・度支（预算）・金部（出纳）・仓部（财帛仓储）</td></tr>
+        <tr><td>礼部</td><td class="k">教育部・宣传部</td><td>礼部（大典朝仪）・学部（学政科举）・膳部（宴享饮膳）・宣传</td></tr>
+        <tr><td>兵部</td><td class="k">国防部</td><td>职方（边防）・武选（武官）・行人（<b>军事情报</b>）・武库</td></tr>
+        <tr><td>刑部</td><td class="k">司法部</td><td>刑部（<b>按覆</b>）・都官（<b>系狱</b>）・比部（审计）・司门（<b>律令制定</b>）</td></tr>
+        <tr><td>工部</td><td class="k">工信部・住建部</td><td>营缮（<b>城内营建</b>）・虞部（<b>野外开发</b>）・信部（驿传通信）・工部（工役制造）</td></tr>
+        <tr><td>民部</td><td class="k">民政部</td><td>户政・抚部（赈灾）・关部（<b>关口出入・身份查验</b>）・社部（乡约保甲）</td></tr>
+        <tr><td>商部</td><td class="k">商务部</td><td>市舶（外贸）・招引・度量（度量衡货币）・平准（物价）</td></tr>
+      </table>
+
+      <h3>十二寺</h3>
+      <table class="t"><tr><th>时</th><th>寺</th><th>今</th></tr>
+        <tr><td>春</td><td>太常寺</td><td class="k">祭祀 ＋ 旅游</td></tr>
+        <tr><td>春</td><td>宗正寺</td><td class="k">皇室事务</td></tr>
+        <tr><td>春</td><td>司农寺</td><td class="k">农业农村部 ＋ 粮食储备局</td></tr>
+        <tr><td>夏</td><td>太府寺</td><td class="k">国库 · 央行</td></tr>
+        <tr><td>夏</td><td>少府寺</td><td class="k">自然资源部</td></tr>
+        <tr><td>夏</td><td>太仆寺</td><td class="k">交通部</td></tr>
+        <tr><td>秋</td><td>卫尉寺</td><td class="k">京城卫戍（五城兵马司）</td></tr>
+        <tr><td>秋</td><td>大理寺</td><td class="k">最高法院</td></tr>
+        <tr><td>秋</td><td>将作寺</td><td class="k">科学院（国防科工・天文地理・医药）</td></tr>
+        <tr><td>冬</td><td>光禄寺</td><td class="k">禁军 ＋ 通政</td></tr>
+        <tr><td>冬</td><td>鸿胪寺</td><td class="k">外交部</td></tr>
+        <tr><td>冬</td><td>水部寺</td><td class="k">水利部</td></tr>
+      </table>
+      <p>刑部（立法·按覆）／大理寺（审判）／御史台（监察）三足并立，是为<b>三法司</b>。<br>
+      宪兵监＝<span class="k">公安部</span>；锦衣卫无今制之比，锦衣卫即锦衣卫。</p>
+
+      <h3>划界八条</h3>
+      <table class="t"><tr><th>#</th><th>界</th><th>断语</th></tr>
+        <tr><td>一</td><td>司农 ／ 少府</td><td><b>司农主稼穑畜养之利，少府主山泽矿藏之藏。</b>养出来的归司农（耕蚕牧渔、人工林苑、官仓）；长出来挖出来的归少府（山林川泽、矿冶、野生鸟兽、渔猎之政）。</td></tr>
+        <tr><td>二</td><td>太仆 ／ 少府</td><td><b>马归太仆，牛羊归少府。</b>马为国用之器（军马、驿马、车舆），故隶交通；牛羊为地产之利，故隶资源。</td></tr>
+        <tr><td>三</td><td>营缮 ／ 虞部</td><td><b>营缮主墙内，虞部主墙外。</b>城池宫室官署坛庙归营缮；采伐采石开山拓路归虞部。</td></tr>
+        <tr><td>四</td><td>虞部 ／ 水部</td><td><b>虞部主开，水部主守。</b>新凿之渠、新筑之堤由虞部兴工，工成移交水部管养。〔历代河工之弊，多在此交接处〕</td></tr>
+        <tr><td>五</td><td>鸿胪 ／ 行人</td><td><b>鸿胪主明，行人主暗。</b>外交全权在鸿胪寺；兵部行人司专掌军事情报刺探、传令，不预外交。</td></tr>
+        <tr><td>六</td><td>膳食</td><td>光禄寺<b>不掌饮膳</b>。太官、肴藏、良酝三署移隶礼部膳部司。光禄专掌宫禁宿卫与通政。</td></tr>
+        <tr><td>七</td><td>织染</td><td>少府寺织染署移隶工部工部司——织染为制造，非资源。</td></tr>
+        <tr><td>八</td><td>争界之裁</td><td>两衙争界不决，呈尚书省左右司郎中；不决呈左右仆射；再不决，政事堂议。</td></tr>
+      </table>
+
+      <h3>尚书省左右司重编</h3>
+      <p>原制左司统吏户礼、右司统兵刑工，唐六部旧法。今有二十衙，当重编：</p>
+      <table class="t"><tr><th></th><th>四部</th><th>六寺</th><th>所贯</th></tr>
+        <tr><td><b>左司</b></td><td>吏・户・礼・民</td><td>春三卿（太常宗正司农）＋夏三卿（太府少府太仆）</td><td class="k">养民之政</td></tr>
+        <tr><td><b>右司</b></td><td>兵・刑・工・商</td><td>秋三卿（卫尉大理将作）＋冬三卿（光禄鸿胪水部）</td><td class="k">御外治具之政</td></tr>
+      </table>
+      <p>八部四四分，十二寺按四时六六分，两边各十衙，恰对称。</p>
+    </div>
+
+    <div class="pane" id="pane-rank"></div>
+    <div class="pane" id="pane-tang"></div>
+    <div class="pane" id="pane-kao"></div>
+    <div class="pane" id="pane-bing"></div>
+  </div>
+
+  <div id="detail"></div>
+</div>
+
+<script>
+/* ============================================================
+   大楚职官志 · 数据
+   from： 原=原设定  补=参照唐宋明清补全  修=本次修订改定
+   ============================================================ */
+
+function bu(name, desc, today, si){
+  return [{name, rank:"正二位", cat:"八部", desc, today,
+    officers:[
+      {n:name+"尚书", r:"正二位", role:"长", from:"原"},
+      {n:name+"左侍郎", r:"正三位", role:"副", from:"原"},
+      {n:name+"右侍郎", r:"正三位", role:"副", from:"原"}
+    ],
+    children: si.map(s=>({
+      name:s.n, rank:s.imp?"侍郎／正四位":"正四位", cat:"八部·司", desc:s.note,
+      officers:[
+        {n:s.n+"郎中（判官）", r:s.imp?"正四位（侍郎主之）":"正四位", role:"判", from:"原"},
+        {n:s.n+"员外郎", r:"正五位", role:"副", from:"原"},
+        {n:s.n+"主事", r:"正六位", role:"属", from:"补"},
+        {n:s.n+"令史・书令史", r:"流外", role:"吏", from:"补"},
+        ...(s.extra||[])
+      ], children:[]
+    }))
+  }];
+}
+function si(season, list){
+  return [{name:season, rank:"正二位", cat:"十二寺", desc:season+"三卿。卿正二位（光禄寺卿特例从一位）。",
+    officers:[], children:list.map(s=>{
+      const qr=s.qr||"正二位";
+      return {name:s.name, rank:qr, cat:"十二寺", desc:s.desc, today:s.today,
+        officers:[
+          {n:s.name+"卿", r:qr, role:"长", from:"原", note:s.qnote||""},
+          {n:s.name+"少卿", r:"正三位", role:"副", from:"原"},
+          {n:s.name+"丞（判官）", r:"正四位", role:"判", from:"原"},
+          {n:s.name+"主簿", r:"从七位", role:"属", from:"补"},
+          {n:s.name+"录事", r:"从八位", role:"属", from:"补"},
+          ...(s.extra||[])
+        ], children:[]};
+    })}];
+}
+function fu(name, desc){
+  return [{name, rank:"从一位", cat:"五军", desc,
+    officers:[
+      {n:name+"大都督", r:"从一位", role:"长", from:"原", note:"战区司令"},
+      {n:name+"都督同知", r:"正二位", role:"副", from:"修", note:"战区政治主官（政委）"},
+      {n:name+"都督佥事", r:"从二位", role:"判", from:"修", note:"战区参谋长。原作正三位，误；军系半阶递降，与四海舰队佥事同"},
+      {n:name+"经历", r:"正五位", role:"属", from:"补"},
+      {n:name+"都事", r:"从五位", role:"属", from:"补"},
+      {n:name+"知事", r:"从七位", role:"吏", from:"补"}
+    ], children:[]}];
+}
+function duhu(name, desc){
+  return [{name, rank:"正一位", cat:"都护府", desc,
+    officers:[
+      {n:name+"大都护", r:"正一位", role:"长", from:"原", note:"<b>常缺</b>。非人人得任，多虚其位以待宰相出镇"},
+      {n:name+"长史", r:"正二位", role:"副", from:"修", note:"本府之副，<b>无副大都护之职</b>。副宰相出镇则加一级任之；缺大都护时称「都护」"},
+      {n:name+"司马", r:"从二位", role:"判", from:"修", note:"原正三位，改半阶"},
+      {n:name+"判官", r:"正五位", role:"属", from:"补"},
+      {n:name+"掌书记", r:"从六位", role:"属", from:"补"},
+      {n:name+"经略招讨使（属国诸部）", r:"正三位", role:"属", from:"补", note:"统属国兵。属国兵不在五军军籍——本府得临机决断，专以对外。由中央另派，大都护不得自辟"},
+      {n:name+"译语", r:"流外", role:"吏", from:"补"}
+    ], children:[]}];
+}
+
+const GUANZHI = {
+  name:"皇帝", rank:"天命", cat:"君",
+  desc:"三百年皇明之后再造中华，称大楚。庙号自太祖武皇帝起，至今七世。厉宗坏三省之制，半壁尽失；今上光复，重定官制，纵横二维并立：横制在官僚之内，纵制自民间上行。",
+  officers:[], children:[
+
+  {name:"三公", rank:"正一位", cat:"三公",
+   desc:"丞相、太尉、御史大夫。位极人臣，常带本职差遣，自动加同平章事，一人三票。三公各据一权：丞相掌铨选之提名，太尉掌兵，御史大夫掌民评之采与劾——鼎足乃成。",
+   officers:[
+    {n:"丞相", r:"正一位", role:"长", from:"原", note:"必兼尚书令；三省主官皆可称丞相"},
+    {n:"太尉", r:"正一位", role:"长", from:"原", note:"必兼枢密使，全国武将之首"},
+    {n:"御史大夫", r:"正一位", role:"长", from:"原", note:"管御史台三院。掌察与劾，无除授之权"}
+   ], children:[]},
+
+  {name:"三省", rank:"正一位", cat:"三省",
+   desc:"中书出诏命、门下审驳、尚书执行。判官＋都给事中可处常务，副官可处中务，三公合署处大事。",
+   officers:[], children:[
+    {name:"中书省", rank:"正一位", cat:"三省", desc:"出诏命之省。诏令下行由此。",
+     officers:[
+      {n:"中书令", r:"正一位", role:"长", from:"原", note:"加<b>谨身殿大学士</b>（殿阁第三）"},
+      {n:"中书侍郎", r:"从一位", role:"副", from:"原", note:"加<b>文渊阁大学士</b>（殿阁第六）"},
+      {n:"中书舍人", r:"正二位", role:"判", from:"原"},
+      {n:"通事舍人", r:"从六位", role:"属", from:"补", note:"传宣诏令、引见百官（诏令下行；与光禄寺通政之章奏上行相对）"},
+      {n:"主书", r:"从七位", role:"属", from:"补"},
+      {n:"主事", r:"从八位", role:"属", from:"补"},
+      {n:"令史・书令史・传制・亭长掌固", r:"流外", role:"吏", from:"补"}
+     ]},
+    {name:"门下省", rank:"正一位", cat:"三省",
+     desc:"审诏命，有封驳之权。封驳只驳两次，第三次失效——非抑门下，乃防死锁：两驳之后，举证之责自门下转于政事堂。封驳之实际执行者为给事中、散骑常侍，非侍中本人。",
+     officers:[
+      {n:"侍中", r:"正一位", role:"长", from:"原", note:"加<b>华盖殿大学士</b>（殿阁第二）"},
+      {n:"门下侍郎", r:"从一位", role:"副", from:"原", note:"加<b>东阁大学士</b>（殿阁第七）。<b>本朝之相出于东阁者最多</b>——管封驳是唯一一个天天跟所有人过不去的位子，能在那个位子上不被人恨死的，多半也能当宰相"},
+      {n:"散骑常侍", r:"正二位", role:"判", from:"原", note:"实掌封驳"},
+      {n:"谏议大夫", r:"正四位", role:"属", from:"补"},
+      {n:"起居郎", r:"从六位", role:"属", from:"补", note:"记天子言行；三驳之状入此"},
+      {n:"符宝郎", r:"从六位", role:"属", from:"补", note:"掌玉玺符节"},
+      {n:"城门郎", r:"从六位", role:"属", from:"补"},
+      {n:"左补阙", r:"从七位", role:"属", from:"补"},
+      {n:"左拾遗", r:"从八位", role:"属", from:"补"},
+      {n:"典仪", r:"从九位", role:"属", from:"补"},
+      {n:"门下籍令史", r:"流外", role:"吏", from:"修", note:"掌特旨保任造册、三驳状存档"}
+     ]},
+    {name:"尚书省", rank:"正一位", cat:"三省", desc:"执行政务，统八部十二寺共二十衙。左右司重编：左司领吏户礼民四部＋春夏六寺（养民之政），右司领兵刑工商四部＋秋冬六寺（御外治具之政）。",
+     officers:[
+      {n:"尚书令", r:"正一位", role:"长", from:"原", note:"由丞相兼。<b>三省之长</b>，加<b>奉天殿大学士</b>（殿阁第一；本朝所增，明不以授人）"},
+      {n:"尚书左仆射", r:"从一位", role:"副", from:"原", note:"加<b>文华殿大学士</b>（殿阁第四）"},
+      {n:"尚书右仆射", r:"从一位", role:"副", from:"原", note:"加<b>武英殿大学士</b>（殿阁第五）"},
+      {n:"尚书丞", r:"正二位", role:"判", from:"原", note:"习称左右丞，本朝不定员"},
+      {n:"左司郎中", r:"正三位", role:"属", from:"修", note:"领吏户礼民四部＋太常宗正司农太府少府太仆六寺，凡十衙"},
+      {n:"右司郎中", r:"正三位", role:"属", from:"修", note:"领兵刑工商四部＋卫尉大理将作光禄鸿胪水部六寺，凡十衙"},
+      {n:"左司员外郎", r:"正四位", role:"属", from:"原"},
+      {n:"右司员外郎", r:"正四位", role:"属", from:"原"},
+      {n:"都事", r:"从七位", role:"属", from:"补"},
+      {n:"主事", r:"从八位", role:"属", from:"补"},
+      {n:"令史・书令史・亭长", r:"流外", role:"吏", from:"补"}
+     ]}
+   ]},
+
+  {name:"八部", rank:"正二位", cat:"八部",
+   desc:"吏户礼兵刑工民商，对应天地春夏秋冬人用。每部尚书＋左右侍郎，统四司。与十二寺品秩相同、并列不相统属，行文用「移」。",
+   officers:[], children:[
+    ...bu("吏部","掌人事·选举勋封。民评之考成由考功司定，候选之拟由文选司出——吏部有拟人之权而无定人之权。","人事部",[
+      {n:"文选司", note:"文官选任。据考功司考等拟候选三人，行来暮评。<b>全国最要紧之一闸，亦最大之寻租所在</b>", imp:true},
+      {n:"考功司", note:"官员考课。合三线民评与钱粮完欠、刑狱淹滞诸项定考成", imp:true},
+      {n:"稽勋司", note:"官员勋劳与升迁"},
+      {n:"吏部司", note:"官籍簿册（铨曹）"}
+    ]),
+    ...bu("户部","掌财政·赋税仓储。诸镇节度判官由本部除授，账对本部与太府寺。","财政部",[
+      {n:"户部司", note:"赋税征收"},{n:"度支司", note:"财政预算"},
+      {n:"金部司", note:"金银出纳、国用"},{n:"仓部司", note:"财帛仓储（与司农寺之粮仓分：帛仓归此，粮仓归司农）"}
+    ]),
+    ...bu("礼部","掌礼制·教育·宣传。膳部司接光禄寺三署，实掌宴享饮膳。","教育部・宣传部",[
+      {n:"礼部司", note:"国家大典、朝仪"},
+      {n:"学部司", note:"学政、贡士考试。<b>民评三线之「士线」由本司学政率诸生采录</b>", imp:true},
+      {n:"膳部司", note:"宴享饮膳。领太官署、肴藏署、良酝署（<b>修</b>：三署自光禄寺移入）", extra:[
+        {n:"太官署令", r:"从七位", role:"属", from:"修", note:"御膳。原属光禄寺"},
+        {n:"肴藏署令", r:"从七位", role:"属", from:"修", note:"原属光禄寺"},
+        {n:"良酝署令", r:"从七位", role:"属", from:"修", note:"原属光禄寺"}
+      ]},
+      {n:"宣传司", note:"国家文化宣传"}
+    ]),
+    ...bu("兵部","掌军政·武选·情报。","国防部",[
+      {n:"职方司", note:"边防军镇"},
+      {n:"武选司", note:"武官选任", imp:true},
+      {n:"行人司", note:"<b>军事情报刺探、传令</b>。不预外交——外交全权在鸿胪寺（鸿胪主明，行人主暗）"},
+      {n:"武库司", note:"军械仓储"}
+    ]),
+    ...bu("刑部","掌司法·刑狱·<b>律令制定</b>。与大理寺、御史台并为三法司，而三家各问一事：<b>大理寺问审得对不对</b>（事实与审判）、<b>御史台问查得干不干净</b>（程序与官守）、<b>刑部问拟得合不合律</b>（法之适用）。刑部四司皆以事分，<b>不设州郡之司</b>——故其核止于法，各州案件之复核归察院与大理寺。","司法部",[
+      {n:"刑部司", note:"<b>按覆刑狱</b>（刑狱七道之「核」）。<b>核止于法</b>——刑部无州郡派出，只看卷，其问只一句：拟得合不合律"},{n:"都官司", note:"俘隶簿录、诉免、衣粮医药；<b>羁押之法</b>（七道之「系」）。<b>州郡之监归地方刑曹</b>，都官司掌其法不掌其人"},
+      {n:"比部司", note:"财务审计（勾会）"},{n:"司门司", note:"<b>律令格式之拟定</b>——掌法之门户，律与令由此门出。起草在本司，议在三省与门下，裁在御前。<b>与刑部司分家：核者与拟法者分，则律不由核案之人自改</b>。〔<b>修</b>：门关出入已移民部关部司〕"}
+    ]),
+    ...bu("工部","掌工程·营造·驿传。","工信部・住建部",[
+      {n:"营缮司", note:"<b>墙内之营建</b>：城池、宫室、官署、坛庙"},
+      {n:"虞部司", note:"<b>墙外之开发</b>：采伐、采石、开山、拓路。新渠新堤由本司兴工，工成移交水部寺管养（虞部主开，水部主守）"},
+      {n:"信部司", note:"驿传通信（太仆运物，信部运信）"},
+      {n:"工部司", note:"工役制造、工业管理。领织染署（<b>修</b>：自少府寺移入）", extra:[
+        {n:"织染署令", r:"从七位", role:"属", from:"修", note:"原属少府寺。织染为制造，非资源"}
+      ]}
+    ]),
+    ...bu("民部","掌民政·户籍·赈灾（原创）。","民政部",[
+      {n:"户政司", note:"户籍编录"},{n:"抚部司", note:"赈灾安民"},
+      {n:"关部司", note:"<b>出入关口、跨国行止、身份查验</b>。验的是「你是谁」，不是「许不许你去」——路引已改为身份之证。化外人入境，验而录之，即为境内之人，一体依律"},{n:"社部司", note:"乡约、保甲、民政"}
+    ]),
+    ...bu("商部","掌贸易·度量·物价（原创）。","商务部",[
+      {n:"市舶司", note:"海外贸易"},{n:"招引司", note:"招商引资"},
+      {n:"度量司", note:"度量衡、货币。<b>兼掌属国之轨距、口径、权量——技术标准即新册封，其权不止于国内</b>", imp:true},
+      {n:"平准司", note:"平抑物价"}
+    ])
+   ]},
+
+  {name:"十二寺", rank:"正二位", cat:"十二寺",
+   desc:"春夏秋冬四时各三卿。与八部品秩相同、并列不相统属。卿正二位（光禄寺卿特例从一位），少卿正三位，丞为判官正四位。",
+   officers:[], children:[
+    ...si("春卿",[
+      {name:"太常寺", desc:"宗庙祭祀、礼乐制度。兼掌天下祠庙名山之游观、香税、导引——名胜十之七八为庙宇陵寝，故旅游之政归此。<b>天下宗教之政隶此</b>：僧、道、喇嘛、回、景诸教之名册、度牒、封号、寺产之籍，皆出本寺。<br><b>与驻藏之分</b>：<b>掣签之监在驻藏大臣，封号之出在太常寺</b>——一在场，一在册；缺其一则其人不为朝廷所认。", today:"祭祀 ＋ 宗教 ＋ 旅游", extra:[
+        {n:"僧录司左右善世", r:"正六位", role:"属", from:"补", note:"天下僧籍、度牒、寺产之籍"},
+        {n:"道录司左右正一", r:"正六位", role:"属", from:"补"},
+        {n:"喇嘛印务处郎中", r:"正五位", role:"属", from:"补", note:"<b>四大活佛之封号、名册、印信</b>。达赖・班禅在驻藏，哲布尊丹巴・章嘉在北庭——<b>教一而政二，而册归于一</b>"},
+        {n:"回回・景教掌教", r:"从七位", role:"属", from:"补", note:"回疆、南洋、奥斯曼诸教之在境内者"},
+        {n:"游观署令", r:"从七位", role:"属", from:"修", note:"掌天下祠庙名山之开放、香税、导引"},
+        {n:"协律郎", r:"正八位", role:"属", from:"补"},
+        {n:"奉礼郎", r:"从九位", role:"属", from:"补"},
+        {n:"太祝", r:"正九位", role:"属", from:"补"},
+        {n:"博士", r:"从七位", role:"属", from:"补", note:"议礼定谥。列国君长之庙号谥法亦由本官拟议"}
+      ]},
+      {name:"宗正寺", desc:"宗谱宗法、皇室事务。", today:"皇室事务", extra:[
+        {n:"宗正丞", r:"从五位", role:"属", from:"补"},
+        {n:"知宗谱事", r:"正七位", role:"属", from:"补", note:"修玉牒。清州华族所出皇子降封郡王之诏，由本官录"},
+        {n:"宗正主簿", r:"从七位", role:"属", from:"补"}
+      ]},
+      {name:"司农寺", desc:"稼穑畜养之利：耕、蚕、牧（牛羊之畜养）、渔（养殖）、人工林苑，及天下官仓粮储。「养出来的归司农」。<br><b>茶马互市隶此</b>——茶者，种出来的；马者，换回来的。<b>易之之政在司农，牧之之政在太仆</b>：所得之马，交太仆寺牧养。<br>〔川藏道所以能活，正在此：<b>茶入而药出，一路两货，脚户往返皆有载。</b>见〈地理志·驻藏大臣〉〕", today:"农业农村部＋粮食储备局＋茶马互市", extra:[
+        {n:"茶马司提举（陕西・四川・云南・河州・雅州・天全）", r:"正五位", role:"属", from:"补", note:"<b>以茶易马</b>。掌茶引、茶课、番市；所得之马解太仆寺"},
+        {n:"茶课批验所大使", r:"从八位", role:"吏", from:"补", note:"验引查私。与少府盐引之批验各为一路"},
+        {n:"诸仓署令", r:"从七位", role:"属", from:"补", note:"分掌天下官粮仓"},
+        {n:"上林署令", r:"从七位", role:"属", from:"补", note:"皇家园囿"},
+        {n:"渔林署令", r:"从七位", role:"属", from:"修", note:"养殖与人工林苑（野生渔猎归少府山泽署）"}
+      ]}
+    ]),
+    ...si("夏卿",[
+      {name:"太府寺", desc:"国库、铸币、财政直辖。", today:"国库·央行", extra:[
+        {n:"铸币提举", r:"正六位", role:"属", from:"补", note:"驻直钱监"},
+        {n:"诸库署令", r:"从七位", role:"属", from:"补"}
+      ]},
+      {name:"少府寺", desc:"山泽矿藏之藏：山林川泽之封禁与开采、矿冶、野生鸟兽、渔猎之政。「长出来、挖出来的归少府」。<b>盐政隶此</b>——盐者，池、井、海之所出，山泽之利也，故不归户部而归少府。<b>本朝第二大税源</b>，仅次于田赋。", today:"自然资源部 ＋ 盐政", extra:[
+        {n:"都转运盐使（两淮・两浙・长芦・河东・四川・云南・辽东）", r:"正三位", role:"属", from:"补", note:"<b>盐归少府</b>。掌盐场、盐引、缉私。引银解太府寺，政令出少府"},
+        {n:"盐课提举司提举", r:"从五位", role:"属", from:"补", note:"井盐、池盐诸场"},
+        {n:"盐运司同知・副使・判官", r:"正四位／正五位", role:"属", from:"补"},
+        {n:"批验所大使", r:"从八位", role:"吏", from:"补", note:"验引查私"},
+        {n:"山泽署令", r:"从七位", role:"属", from:"修", note:"掌野生鸟兽、渔猎之政与封禁"},
+        {n:"诸冶署令", r:"从七位", role:"属", from:"补", note:"矿冶"},
+        {n:"将作监丞", r:"正七位", role:"属", from:"补"}
+      ]},
+      {name:"太仆寺", desc:"马政、车舆、道路、驿路。马为国用之器，故隶交通；牛羊为地产之利，归少府。", today:"交通部", extra:[
+        {n:"诸牧监", r:"正六位", role:"属", from:"补", note:"专掌马场，驻河西、营州"},
+        {n:"乘黄署令", r:"从七位", role:"属", from:"补", note:"御马"},
+        {n:"典厩署令", r:"从七位", role:"属", from:"补"}
+      ]}
+    ]),
+    ...si("秋卿",[
+      {name:"卫尉寺", desc:"京城卫戍与治安。统五城兵马司，兼领八校尉（八校尉为天子亲军，卫尉寺与天子双重管辖）。本官以「信得过」为选，不以制衡为拘。", today:"京城卫戍", extra:[
+        {n:"中垒卫指挥使（中垒校尉）", r:"从二位", role:"属", from:"原", note:"八校尉·天子亲军·双重管辖"},
+        {n:"屯骑卫指挥使（屯骑校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"步兵卫指挥使（步兵校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"越骑卫指挥使（越骑校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"长水卫指挥使（长水校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"胡骑卫指挥使（胡骑校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"射声卫指挥使（射声校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"虎贲卫指挥使（虎贲校尉）", r:"从二位", role:"属", from:"原"},
+        {n:"诸卫副指挥使", r:"正三位", role:"副", from:"补"},
+        {n:"诸卫佥事", r:"从三位", role:"判", from:"补"},
+        {n:"诸卫千户・百户", r:"正五位／正六位", role:"属", from:"补"},
+        {n:"中·东·西·南·北城兵马指挥（五）", r:"正四位", role:"属", from:"原", note:"编氓之犯归此；军人与官吏之犯归宪兵监"},
+        {n:"兵马副指挥", r:"从四位", role:"副", from:"补"},
+        {n:"兵马吏目", r:"从七位", role:"吏", from:"补"},
+        {n:"武库署令", r:"从七位", role:"属", from:"补"}
+      ]},
+      {name:"大理寺", desc:"最高审判。", today:"最高法院", extra:[
+        {n:"大理正", r:"正五位", role:"属", from:"补"},
+        {n:"大理司直", r:"从六位", role:"属", from:"补"},
+        {n:"大理主簿", r:"从七位", role:"属", from:"补"},
+        {n:"大理评事", r:"从八位", role:"属", from:"补"}
+      ]},
+      {name:"将作寺", desc:"<b>本朝之科学院</b>：军器制造、格物致知、天文历算、医药。<br><b>新学之书，将作寺纂定，会同礼部学部司刊发</b>——<b>将作主其学，礼部主其颁</b>。名词、公式、图表、度量之定，皆出本寺；<b>一寺定名，天下同算</b>，故译本可读而不可考（见〈考课选举志·八之八〉）。<br>下辖二专监：<b>钦天监</b>（天文、地理）、<b>太医院</b>（医学）。<br><b>格物之功，本寺验之</b>：凡以历算、机器、农种、医药立功者，在官布衣一体，本寺具验状，吏部稽勋司据以定勋拟爵。", today:"科学院（国防科工＋天文地理＋医药）", extra:[
+        {n:"军器监", r:"正五位", role:"属", from:"补"},
+        {n:"火药局提举", r:"正六位", role:"属", from:"补"},
+        {n:"火器营提举", r:"正六位", role:"属", from:"补"},
+        {n:"格致馆学士", r:"正四位", role:"属", from:"补", note:"<b>纂定新学之书</b>：格致、算学、舆地、船械、农政。会同礼部学部司刊发；各都护府、属国译书房之译本，由本馆审定"},
+        {n:"钦天监监正・监副", r:"正四位／正五位", role:"属", from:"补", note:"<b>天文地理专监</b>。历法、天象、舆图测绘、报时。<b>颁历之权在此</b>——历者，天下同其时也"},
+        {n:"五官正・灵台郎・保章正・挈壶正", r:"正六位以下", role:"属", from:"补"},
+        {n:"太医院院使・院判", r:"正四位／正五位", role:"属", from:"补", note:"<b>医学专监</b>。宫禁医药、医官之考、医书之纂、生药之库；疫作则遣医官随宪兵监赴之"},
+        {n:"御医・吏目・医士", r:"正六位以下", role:"属", from:"补"},
+        {n:"将作丞", r:"从五位", role:"属", from:"补"}
+      ]}
+    ]),
+    ...si("冬卿",[
+      {name:"光禄寺", qr:"从一位", qnote:"领侍卫内大臣 · 兼侍中 · 参知政事 · 参汉光禄勋之制",
+       desc:"专掌宫禁宿卫与通政。饮膳三署已移礼部膳部司。本衙掌宫禁、掌章奏出纳，位从一位而入政事堂——一人可同时近幼主、通百官之奏。〔制度之雷。惟章奏上行归此、诏令下行归中书通事舍人、御史台又得风闻直奏，三道分属，故非绝对〕",
+       today:"禁军＋通政", extra:[
+        {n:"五官中郎将", r:"正三位", role:"属", from:"补", note:"宿卫宫禁"},
+        {n:"左中郎将", r:"正三位", role:"属", from:"补"},
+        {n:"右中郎将", r:"正三位", role:"属", from:"补"},
+        {n:"羽林中郎将", r:"正三位", role:"属", from:"补"},
+        {n:"虎贲中郎将", r:"正三位", role:"属", from:"补", note:"与卫尉寺虎贲卫并行"},
+        {n:"通政司参议", r:"正四位", role:"属", from:"补", note:"内外章奏出纳（上行）"},
+        {n:"奉车都尉・驸马都尉・骑都尉", r:"正四位", role:"属", from:"补"}
+      ]},
+      {name:"鸿胪寺", desc:"外交全权：朝聘、接待、遣使、译语。册封藩国、九锡之礼皆由本寺具仪。<br><b>藩属之事，本朝不设理藩院，三分之</b>：<b>礼在鸿胪寺</b>（朝贡、册封、仪注、译语）、<b>兵在兵部</b>（职方掌其舆图兵额、行人掌其刺探传令）、<b>教在太常寺</b>（活佛封号、僧道名册）。而<b>其地之政在都护府</b>——四事各有其主，无一衙总之。<br>〔※ 不设理藩院者，正因都护府已管其地；再立一院，则与都护争。〕", today:"外交部 ＋ 藩属之礼", extra:[
+        {n:"鸿胪少卿", r:"正四位", role:"副", from:"原"},
+        {n:"典客署令", r:"从七位", role:"属", from:"补", note:"接四夷使"},
+        {n:"司仪署令", r:"从七位", role:"属", from:"补"},
+        {n:"译语", r:"流外", role:"吏", from:"补"}
+      ]},
+      {name:"水部寺", desc:"水利、漕渠。既成水道之守与运（新工之开在工部虞部司）。", today:"水利部", extra:[
+        {n:"漕运总督", r:"正三位", role:"属", from:"补", note:"驻淮安，总南北漕"},
+        {n:"河道总督", r:"正三位", role:"属", from:"补", note:"专理黄淮运三河"},
+        {n:"水部丞", r:"从五位", role:"属", from:"补"}
+      ]}
+    ])
+   ]},
+
+  {name:"御史台", rank:"从一位", cat:"御史台",
+   desc:"御史大夫所统。三院＋都给事中体系。<b>御史台不在人事之链上</b>——三院之职在察与劾，无除授之权，故虽掌民评之档而不能以之进退人。三院主官宜由皇帝直除，御史大夫不得辟署、不得奏罢（备议）。",
+   officers:[{n:"御史大夫", r:"正一位", role:"长", from:"原"}],
+   children:[
+    {name:"台院（御史中丞）", rank:"从一位", cat:"御史台",
+     desc:"监察百官。统八部十二寺共二十科都给事中——一衙一科，正是以二十个平行衙门待之的铁证。",
+     officers:[
+      {n:"御史中丞", r:"从一位", role:"长", from:"原"},
+      {n:"台院副都御史", r:"正二位", role:"副", from:"原"},
+      {n:"台院佥都御史", r:"从二位", role:"判", from:"原"},
+      {n:"八部都给事中（八）", r:"正六位", role:"科", from:"原", note:"吏户礼兵刑工民商各一。<b>吏部都给事中察吏部尚书，以正六位察正二位——防「买入围」之钉</b>"},
+      {n:"十二寺都给事中（十二）", r:"正六位", role:"科", from:"修", note:"太常宗正司农太府少府太仆卫尉大理将作光禄鸿胪水部各一"},
+      {n:"给事中", r:"正七位", role:"科", from:"原", note:"考评优秀升三级"},
+      {n:"殿中御史", r:"正七位", role:"属", from:"补"},
+      {n:"监察御史", r:"正七位", role:"属", from:"补"},
+      {n:"主簿・录事・令史", r:"流外", role:"吏", from:"补"}
+     ]},
+    {name:"谏院（治书侍御史）", rank:"从一位", cat:"御史台",
+     desc:"监察三省、谏诤皇帝。唐宋谏官隶门下省，为宰相属官，谏君先过宰相一关；本朝拎出置于御史台，谏君之权脱于三省。",
+     officers:[
+      {n:"治书侍御史", r:"从一位", role:"长", from:"原"},
+      {n:"谏院副都御史", r:"正二位", role:"副", from:"原"},
+      {n:"谏院佥都御史", r:"从二位", role:"判", from:"原"},
+      {n:"三省都给事中（三）", r:"正五位", role:"科", from:"原"},
+      {n:"枢密都给事中", r:"正五位", role:"科", from:"原"},
+      {n:"给事中", r:"正六位", role:"科", from:"原"},
+      {n:"谏议大夫", r:"正四位", role:"属", from:"补"},
+      {n:"主簿・录事・令史", r:"流外", role:"吏", from:"补"}
+     ]},
+    {name:"查院（都御史）", rank:"从一位", cat:"御史台",
+     desc:"查天下案件，派出巡按御史。<b>兼掌民评三线之「明线」</b>：州县设采风匦，钥在巡按，封存直送本院，地方不得开拆。合算须与锦衣卫、礼部学部司三方会启。查院受台院、谏院监督。",
+     officers:[
+      {n:"都御史", r:"从一位", role:"长", from:"原"},
+      {n:"查院副都御史", r:"正二位", role:"副", from:"原"},
+      {n:"查院佥都御史", r:"从二位", role:"判", from:"原"},
+      {n:"巡按御史", r:"正七位", role:"属", from:"补", note:"代天巡狩，按州遣派。兼掌采风匦"},
+      {n:"采风郎", r:"正七位", role:"属", from:"修", note:"专掌匦状封启、分层定额、三线会启之押"},
+      {n:"按察使（地方按察长官）", r:"从二位", role:"属", from:"补", note:"由各州长史兼"},
+      {n:"提刑按察副使", r:"正四位", role:"属", from:"补"},
+      {n:"按察佥事", r:"正五位", role:"属", from:"补"}
+     ]}
+   ]},
+
+  {name:"内廷 · 二十四衙门", rank:"正四位", cat:"内廷",
+   desc:"<b>十二监、四司、八局，凡二十四衙门</b>。天子之私臣，不入流品之正途，然自有其阶。<br><b>本朝与前明之别，全在两条界：</b><br>一、<b>禁军不归内廷。</b>宫禁宿卫在<b>光禄寺</b>（八校尉诸卫），京城卫戍在<b>卫尉寺</b>（五城兵马司）——<b>皆外朝之官</b>。<b>御马监所辖者止于净军</b>：内府自有之兵，员额有定，守内苑门禁而已，<b>不出宫城</b>。<br>二、<b>镇守太监止南京一员。</b>天下诸州、诸镇、诸关，无一处有镇守太监——内臣出镇本无意义，且与「禁军不归内廷」相戾。<b>唯南京不可无。</b>两京之制，<b>北京有天子，南京无天子</b>；留都之上若无一人代天子之身，则孝陵、宫阙、玺印皆无所属。故以内臣居之——<b>他不带兵、不理民、不预军政，只代一个「在」字。</b><br><b>司礼监之权在「进」不在「批」</b>：奏本自通政入政事堂，票拟出政事堂，司礼监掌进御、用宝、传旨；<b>不得代批</b>。<b>内阁既为政事堂所代，则前明「批红」之柄自始不存。</b>",
+   officers:[
+    {n:"司礼监掌印太监", r:"正四位", role:"长", from:"补", note:"掌进御、用宝、传旨、内廷礼仪。<b>不得代批票拟</b>——政事堂在，批红无所附丽"},
+    {n:"司礼监秉笔太监", r:"从四位", role:"副", from:"补", note:"录旨、存档。<b>旨出必副本存门下省</b>，故内外两本可勘"},
+    {n:"御马监掌印太监", r:"从四位", role:"属", from:"补", note:"<b>掌净军</b>——内府之兵，员额有定，守内苑门禁，<b>不出宫城</b>。禁军在光禄、卫戍在卫尉，皆不隶此"},
+    {n:"南京镇守太监", r:"正三位", role:"属", from:"原", note:"<b>全国唯一之镇守太监</b>。<b>南京无天子，故以内臣代其身</b>：守孝陵、掌留都宫阙玺印、岁时祭告。<b>不带兵、不理民、不预军政</b>——与淮南节度使、操江提督、南京兵部尚书（留守）并立而不相统属，<b>三人管事，一人管「在」</b>"},
+    {n:"内官监・司设监・尚膳监・尚衣监・都知监", r:"从四位／正五位", role:"属", from:"补", note:"宫殿营造、陈设、膳羞、衣冠、导从"},
+    {n:"印绶监・直殿监・尚宝监・神宫监", r:"正五位", role:"属", from:"补"},
+    {n:"钟鼓监・惜薪监", r:"从五位", role:"属", from:"补"},
+    {n:"四司（惜薪・钟鼓・宝钞・混堂）司正", r:"正六位", role:"属", from:"补"},
+    {n:"八局（兵仗・银作・浣衣・巾帽・针工・内织染・酒醋面・司苑）大使", r:"从六位", role:"属", from:"补", note:"<b>兵仗局造器而不掌兵</b>；军器之政在将作寺军器监"},
+    {n:"提督东厂太监", r:"从四位", role:"属", from:"补", note:"〔※本稿代改，可回退〕若不欲有厂，则删此条，缉事之权尽归锦衣卫与宪兵监。<b>本朝已有锦衣卫、宪兵监、御史台三线，再立一厂，四线相攻</b>——利弊须裁"},
+    {n:"女官（六局一司：尚宫・尚仪・尚服・尚食・尚寝・尚功・宫正）", r:"正五位以下", role:"属", from:"补", note:"<b>宫正司掌宫禁纠察</b>，与内臣互纠"}
+   ], children:[]},
+
+  {name:"特务系统", rank:"正二位", cat:"特务",
+   desc:"宪兵监＝公安部；锦衣卫无今制之比。<b>捕权三分</b>：编氓之犯宪兵监捕之，有品之官与十恶锦衣卫捕之，军中军人节度推官捕之。<b>三家皆不得自系</b>——捕而即交地方刑曹。锦衣卫并掌民评三线之「暗线」。",
+   officers:[], children:[
+    {name:"宪兵监", rank:"正二位", cat:"特务", today:"公安部",
+     desc:"<b>即公安部。</b>掌天下缉捕、治安、狱前羁押，垂直至县，不隶地方。本朝罢三班衙役，捕权尽归于此——衙役无品无俸，下乡即扰民；今易之以有品有俸、有考成而不归地方管之国家警察。<br><b>此为民评能行之前提</b>：县令手中一旦无捕快，则压不住投匦之人。<br>界：<b>捕在宪兵监，系在地方刑曹（刑部都官司掌其法），鞫在大理寺派出。</b>军人之犯不在此列——归节度推官之军法与枢密院。",
+     officers:[
+      {n:"宪兵监都指挥使", r:"正二位", role:"长", from:"修", note:"与八部尚书同品"},
+      {n:"都指挥同知", r:"从二位", role:"副", from:"修"},
+      {n:"都指挥佥事", r:"正三位", role:"判", from:"修"},
+      {n:"州宪兵指挥使", r:"从三位", role:"属", from:"修", note:"驻各州，<b>不隶刺史</b>，直属本监"},
+      {n:"郡宪兵千户", r:"正五位", role:"属", from:"修", note:"郡千户所"},
+      {n:"县宪兵百户", r:"正六位", role:"属", from:"修", note:"县百户所。<b>与上县县令同品，不相统属</b>——县令指挥不动他，他亦不预县政"},
+      {n:"县尉（百户之副）", r:"从六位", role:"属", from:"修", note:"原为县令属官，今改隶本监派驻"},
+      {n:"试百户", r:"从六位", role:"属", from:"补"},
+      {n:"总旗・小旗", r:"从七位／正八位", role:"吏", from:"补"},
+      {n:"护匦旗官", r:"正八位", role:"属", from:"修", note:"<b>护匦而不得启匦</b>。匦钥在巡按御史，本监只任押运；途中匦损者，本管百户以下俱坐"}
+     ]},
+    {name:"锦衣卫", rank:"正二位", cat:"特务",
+     desc:"皇帝直属，<b>皇权特许</b>。北镇抚司掌捕人与情报，南镇抚司监察天下军纪。<b>其捕止于二端：三法司已定罪者，或明确触发十恶者。</b>捕而即交地方刑曹，<b>不自系——本朝有北镇抚司，而无诏狱</b>；鞫在大理寺派出，巡按临视。<b>兼掌民评三线之「暗线」</b>：密访抽样，不告地方，不设定所；封状与查院、学部司三方会启。",
+     officers:[
+      {n:"锦衣卫指挥使", r:"正二位", role:"长", from:"原"},
+      {n:"锦衣卫同知", r:"从二位", role:"副", from:"原"},
+      {n:"锦衣卫佥事", r:"正三位", role:"判", from:"原"},
+      {n:"南北镇抚使", r:"正三位", role:"属", from:"补", note:"<b>南镇监察天下军纪</b>（死刑营纵掠之罪，亦在其察）；<b>北镇掌捕人、情报</b>。〔<b>修</b>：旧作「北镇掌诏狱」，今废——捕者不得自系〕"},
+      {n:"采访千户", r:"正五位", role:"属", from:"修", note:"专掌民评暗线密访"},
+      {n:"千户・百户", r:"正五位／正六位", role:"属", from:"补"},
+      {n:"校尉・力士・缇骑", r:"流外", role:"吏", from:"补"}
+     ]}
+   ]},
+
+  {name:"枢密院〔中央司令部〕", rank:"正一位", cat:"枢密",
+   desc:"太尉／枢密使所统，全国军令出此。<b>掌发兵而不统兵</b>，与五军都督府（统兵而不能发兵）分掌军令与军政。长副判即军事主官／政治主官／参谋长。<br><b>四面房对四都护、四战区</b>：北面—北庭—后军，东面—安东—左军，西面—安西・驻藏—右军，南面—南洋—前军。<b>中军无房</b>——防内不防外，无外藩可对。",
+   officers:[
+    {n:"枢密使", r:"正一位", role:"长", from:"原", note:"由太尉兼。中央军事主官"},
+    {n:"枢密同知", r:"从一位", role:"副", from:"修", note:"中央政治主官"},
+    {n:"签书枢密院事", r:"正二位", role:"判", from:"修", note:"中央参谋长"},
+    {n:"枢密都承旨", r:"正四位", role:"属", from:"补", note:"承宣军命"},
+    {n:"副都承旨", r:"正五位", role:"属", from:"补"},
+    {n:"北面房承旨", r:"从五位", role:"属", from:"补", note:"北庭·并冀幽军务（对后军）"},
+    {n:"东面房承旨", r:"从五位", role:"属", from:"补", note:"安东·青兖营军务（对左军）。朝鲜、日本、三部女真之事在此"},
+    {n:"西面房承旨", r:"从五位", role:"属", from:"补", note:"安西·驻藏·雍凉益军务（对右军）"},
+    {n:"南面房承旨", r:"从五位", role:"属", from:"补", note:"南洋·南扬江广交军务（对前军）"},
+    {n:"机宜房承旨", r:"从五位", role:"属", from:"补", note:"机要文书"},
+    {n:"编修官・检讨官", r:"从七位／正八位", role:"属", from:"补"}
+   ], children:[]},
+
+  {name:"五军都督府〔战区〕", rank:"从一位", cat:"五军",
+   desc:"前后左右中五军，按地理统兵，<b>统兵而不能发兵</b>——<b>兵在其手，令不在其手</b>：战区自有指挥之权，无自启战端之权，动则须枢密军令与符。明制五军都督府本为军政机关（掌军籍卫所而不掌指挥），本朝升为常设战区，指挥归之，故各设政治主官与参谋长以配之。",
+   officers:[], children:[
+    ...fu("中军都督府","<b>豫・荆・徐・北扬</b>四州，十一镇。兼统南京防卫（淮南节度使、操江提督、守备太监）。居两京之间，无边可守、无海可争——<b>防内不防外</b>，站在其余四军与京城之间"),
+    ...fu("后军都督府","<b>并・冀・幽</b>三州，九镇（含九边四）。<b>兼统卫尉寺、五城兵马司</b>——顺天在幽州，京城卫戍随州而属。对北庭"),
+    ...fu("左军都督府","<b>青・兖・营</b>三州，七镇（含九边一）。兼统北海舰队。对安东"),
+    ...fu("前军都督府","<b>南扬・江・广・交</b>四州，十二镇。兼统东海、南海、西海三舰队。对南洋"),
+    ...fu("右军都督府","<b>雍・凉・益</b>三州，十一镇（含九边四）。对安西、驻藏")
+   ]},
+
+  {name:"节度使〔军〕", rank:"正二位", cat:"节度使",
+   desc:"九边节度使受五军都督府＋大都护府双重管辖；<b>内地四十一节度使受本州刺史与五军都督府管辖——非藩镇，乃中央军驻于各州</b>。刺史紧急时凭节钺可调本州一定比例之兵。四职分掌：兵在节度使、政在留后、谋在观察、饷在判官。<br><b>内地水师隶各镇节度使</b>——江、河、湖、运之师，各随其镇，不隶四海舰队。<b>四海舰队主外洋，内河水师主内水</b>；唯南京别设操江提督，专管大江水师，不隶镇海节度使。",
+   officers:[
+    {n:"节度使", r:"正二位", role:"长", from:"修", note:"军事主官（司令）。<b>九边九镇及内地要冲之镇，所辖为师团；其余内地诸镇为旅团</b>"},
+    {n:"节度副使·知留后事（留后）", r:"从二位", role:"副", from:"修", note:"副司令。节度使出缺则权知。<b>由中央除授，不得由本镇军士推举；不得同镇连任；军中私推者以谋逆论</b>。〔随节度使升半阶〕"},
+    {n:"观察使", r:"从二位", role:"副", from:"修", note:"政治主官（政委）。与留后同品，互不统属。留后出缺由观察权知，不得由节度使摄。〔随节度使升半阶〕"},
+    {n:"行军司马", r:"正三位", role:"判", from:"修", note:"参谋长，掌兵机。〔随节度使升半阶〕"},
+    {n:"参将", r:"正三位", role:"属", from:"补", note:"<b>分守一路</b>，统数卫，当<b>旅团</b>。唯师团级之镇（九边、内地要冲）设之"},
+    {n:"游击将军", r:"从三位", role:"属", from:"补", note:"<b>不守地，专机动</b>，统一卫至二卫，当加强联队。诸镇皆得设"},
+    {n:"卫指挥使", r:"正四位", role:"属", from:"补", note:"一卫之主，当<b>联队</b>（约五千六百人）。与八部诸司郎中同位——<b>一卫之主，一司之长</b>"},
+    {n:"卫指挥同知", r:"从四位", role:"副", from:"补"},
+    {n:"卫指挥佥事", r:"正五位", role:"判", from:"补", note:"卫之参谋。与千户同位，以职别不以位别"},
+    {n:"节度判官", r:"正五位", role:"属", from:"修", note:"后勤——粮饷、军资、屯田。<b>由户部除授，账对户部与太府寺，不由节度使辟署</b>"},
+    {n:"节度推官", r:"正六位", role:"属", from:"补", note:"军法"},
+    {n:"掌书记", r:"正六位", role:"属", from:"修", note:"副官。原从六位，提一等"},
+    {n:"巡官", r:"从七位", role:"属", from:"补", note:"侦察、巡哨"},
+    {n:"衙推", r:"从七位", role:"吏", from:"补"},
+    {n:"千户（副千户）", r:"正五位（从五位）", role:"属", from:"补", note:"千户所，一千一百二十人，当<b>大队</b>。一卫五所：中／左／右／前／后"},
+    {n:"百户（副百户）", r:"正六位（从六位）", role:"属", from:"补", note:"百户所，一百一十二人，当<b>中队</b>"},
+    {n:"总旗", r:"正七位", role:"属", from:"补", note:"五十人，当<b>小队</b>"},
+    {n:"小旗", r:"从七位", role:"属", from:"补", note:"当排。<b>本朝小旗不同于前明</b>：前明小旗辖十人，本朝其下增什、伍，小旗辖数什"},
+    {n:"什长・伍长", r:"无位", role:"吏", from:"补", note:"什长当班长，伍长当副班长"}
+   ], children:[]},
+
+  {name:"四海舰队 ＋ 四大镇守府", rank:"从一位", cat:"海军",
+   desc:"北海（母港大连）、东海（会稽）、南海（南海郡）、西海（交趾）。<b>三重管辖：都护府＋五军都督府＋枢密院</b>——舰队处陆海二体系之接缝，故三属。",
+   officers:[
+    {n:"四海舰队提督（四）", r:"从一位", role:"长", from:"原", note:"军事主官"},
+    {n:"舰队都督同知", r:"正二位", role:"副", from:"修", note:"政治主官"},
+    {n:"舰队都督佥事（参谋）", r:"从二位", role:"判", from:"原", note:"参谋长——原注即作「参谋」"},
+    {n:"分舰队司令（重号将军：征北／镇北／安北／平北之属）", r:"从二位", role:"属", from:"原"},
+    {n:"分舰队副官（中郎将）", r:"正三位", role:"属", from:"原"},
+    {n:"航母／战列舰指挥官（杂号将军或中郎将）", r:"正三位", role:"属", from:"原"},
+    {n:"巡洋舰指挥官（中郎将）", r:"正四位", role:"属", from:"原"},
+    {n:"驱逐舰指挥官（校尉）", r:"从四位", role:"属", from:"原"},
+    {n:"镇守府镇守（按地名设）", r:"正三位", role:"长", from:"原"},
+    {n:"副镇守", r:"从三位", role:"副", from:"补"},
+    {n:"舰队经历・知事", r:"正五位／从七位", role:"属", from:"补"}
+   ], children:[]},
+
+  {name:"四大都护府", rank:"正一位", cat:"都护府",
+   desc:"安西、北庭、安东、南洋。大都护正一位。<b>得临机决断，对外用兵不待枢密军令</b>——边情瞬息，四千里外请令是取死之道；属国兵不在五军军籍，正为此设。<b>锁不在「打不打」，在「往哪边打」：入内地关塞须兵符勘合，述职扈从有定数。</b>",
+   officers:[], children:[
+    ...duhu("安西都护府","驻轮台。东起玉门关，西抵咸海。<b>四府之中最纯——境内无一郡，表里皆藩。</b><br>东道二藩（王爵世袭）：哈密〔唐伊州〕、吐鲁番〔唐西州・高昌〕<br>天山南路回疆八城（伯克治之）：喀什噶尔〔疏勒〕、库车〔龟兹〕、和阗〔于阗〕、喀喇沙尔〔焉耆〕——<b>此四者即唐安西四镇</b>；叶尔羌〔莎车〕、阿克苏〔姑墨〕、乌什〔温宿〕、英吉沙尔<br>中亚五汗国：哈剌撒克、吉儿吉思、乌兹别克、塔吉克、土库蛮"),
+    ...duhu("北庭都护府","夏驻库伦，冬驻归化。<b>管天下蒙古诸部；北界至北海〔贝加尔湖〕。</b><br><b>蒙古十二部</b>——漠南五（察哈尔・科尔沁・翁牛特・土默特・鄂尔多斯）／漠北五（土谢图汗・车臣汗・札萨克图汗・巴尔虎・布里亚特）／漠西二（准噶尔・和硕特）<br>附：唐努乌梁海（非蒙古，不入部）<br><b>察哈尔出忽必烈—达延汗，汗统本部；科尔沁出哈撒儿，东道诸王，无缘汗位——二者非一家，且正相仇。</b><br><b>部以族领，地以疆分</b>——准噶尔部隶北庭而伊犁之地属安西，和硕特部隶北庭而青海之地属驻藏。<br><b>兼领蒙古二活佛</b>——哲布尊丹巴呼图克图（库伦）、章嘉呼图克图（多伦诺尔）。格鲁四大活佛，二在藏隶驻藏、二在蒙隶北庭：<b>教一而政二</b>，法统不越政界。"),
+    ...duhu("安东都护府","夏驻会宁，冬驻长春。管内外东北、三部女真、朝鲜、日本。海西：叶赫哈达乌拉辉发；野人：赫哲鄂伦春达斡尔锡伯扶余；建州：卫、左卫、右卫"),
+    ...duhu("南洋都护府","驻河内。管安南、占城、暹罗、马来、缅、三佛齐／满剌加、南洋群岛")
+   ]},
+
+  {name:"驻藏大臣", rank:"从一位", cat:"驻藏",
+   desc:"<b>使持节、都督驻藏诸军事</b>，驻逻些。协助达赖、班禅管辖<b>卫（前藏）・藏（后藏，含阿里三围）・康（喀木）・安多</b>四部，别领廓尔喀・哲孟雄・布鲁克巴三藩。<br><b>低都护一等而本地有兵</b>——都护正一位，主开边，可临机决断；驻藏从一位，主守成，取节钺之中档：<b>使持节而不加钺</b>，可斩节度以下，不可专征伐。<br><b>职有七</b>：<br>一、<b>监督金瓶掣签</b>——达赖、班禅转世，瓶置大昭寺，大臣亲视其掣，验而后奏。<b>监督而已</b>：不代选、不指定、不否决；然签不由大臣监，则其人不为朝廷所认——<b>认与不认，即是全部的权力</b>。<br>二、<b>管噶厦</b>——四噶伦之任免、钱粮、刑名，核而后行；达赖亲政后与之平行会商，事须联署。<br>三、<b>代四部进言</b>——卫藏康安四部之疾苦诉讼，汇而上闻。<b>监临与代言一身二任</b>：只监不代，则朝廷所知唯官报，藏人所见唯监视，久必两离。<br>四、<b>调兵四道</b>——①安西军（叶尔羌→赛图拉→噶大克，为阿里）②本镇驻兵（日喀则—逻些—察木多汛塘，<b>唯此一道可自调</b>）③四川行都司（建昌→雅州→打箭炉→巴塘→察木多，为康）④南洋都护府水陆军（恒河口登陆→哲孟雄→亚东→江孜，<b>四道唯此可运炮</b>）。<b>北无道</b>。<br>五、<b>兴其生业</b>——藏地之贫在地寒路绝，<b>蒸汽铁路上不来</b>。青稞、耐寒诸作为口粮之本（太重太贱，不为出口之货）；药材、麝香、鹿茸、羊绒、金砂为出口之利——<b>无铁路之地只出「价重于形」之货</b>。茶入药出，商队乃自养。<br>六、<b>取士</b>——四部各设考点各分名额（逻些・日喀则・察木多・共和），乡试大臣亲判，会试入北榜。<b>代言与取士同出一笔</b>。<br>七、<b>其人之资</b>——懂民俗、断案公、教化不夺其教（可压不可抹）、汉藏和睦。<b>考课不在斩获，在四部无诉、二佛无怨、汉藏无斗</b>；三者具，虽终任无一战，亦为上考。<br><b>格鲁四大活佛，二在藏二在蒙</b>：达赖・班禅隶驻藏，<b>哲布尊丹巴（库伦）・章嘉呼图克图（多伦诺尔）隶北庭</b>——<b>教一而政二</b>，使漠北之众不因法统听命于逻些，卫藏之众不因法统听命于库伦。",
+   officers:[
+    {n:"驻藏大臣（使持节・都督驻藏诸军事）", r:"从一位", role:"长", from:"原", note:"监金瓶掣签、管噶厦、代四部进言、亲判四部乡试。<b>本镇之兵自调，外三道须堪合</b>。<b>任满转正一位</b>——考课全为负向（无赋税、无户口增长、无斩获可报），故不以功赏而以阶保：熬满即升，熬不满一无所得"},
+    {n:"帮办大臣", r:"正二位", role:"副", from:"补"},
+    {n:"参赞大臣", r:"正三位", role:"属", from:"补"},
+    {n:"夷情章京", r:"从五位", role:"属", from:"补"},
+    {n:"译书房章京", r:"从六位", role:"属", from:"补", note:"<b>不止通事。</b>专以藏文译新学之书——格致、算学、舆地、船械、医方、农政。<b>技术可以译，功名不能译</b>：译本任人读、任人用，而<b>新学一科必以汉文答卷，他文只作对照</b>——一译则名词歧出，天下无同一之算学。经义、策论则听用藏文。<b>不禁你说什么，只决定什么值钱</b>"},
+    {n:"前藏粮务・后藏粮务", r:"正六位", role:"属", from:"补"},
+    {n:"驻藏总兵（本镇）", r:"正三位", role:"属", from:"补", note:"统藏内汛塘。日喀则—逻些—太昭—察木多一线"},
+    {n:"噶大克办事章京", r:"从四位", role:"属", from:"补", note:"<b>阿里地属后藏而戍兵隶安西</b>——此职由安西、驻藏两府会派，为大楚境内唯一两大都护同守之地"},
+    {n:"察木多帮办", r:"从四位", role:"属", from:"补", note:"当川藏道之口，与四川行都司相接"}
+   ], children:[]},
+
+  {name:"地方 · 州郡县", rank:"—", cat:"地方",
+   desc:"<b>本朝无「省」之名而有「省」之实</b>：布政・按察・都指挥三司不另立衙门，由州之<b>别驾（布政使）、长史（按察使）、司马（都指挥使）</b>充之——<b>省进了州的壳</b>。凡分部者<b>部各一套三司，一部即一省</b>；故<b>大州不是大的省，是大区</b>。三色：大州一州含数省（刺史即总督）、中州一州即一省（刺史即巡抚）、小州<b>两州两省</b>（山东人太多，一套三司治不过来，故<b>青、兖各一套</b>；「山东」遂如「湖广」——旧省之名今为两省。<b>一人行二州刺史事，是为山东巡抚</b>）。<b>三处都不是叠床架屋，是同一个人换三个名字。</b><b>合十七州、二十五省</b>——<b>大州分部以其地广，山东分州以其人稠：同一味药，两种病</b>。<br>州（大／中／小）→ 郡（上／下）→ 县（上／中／下），各设吏户礼兵刑工民商八曹。八曹与中央八部同名同序——唐宋明地方皆六曹，与六部不同名不同序；本朝同构，故民评八问可与八曹一一相对。",
+   officers:[], children:[
+    {name:"大州（营・荆・江・益・交）", rank:"从一位", cat:"地方",
+     desc:"刺史从一位，使持节、都督本州诸军事，加节钺。<b>大州者，本自一体而地太大，故分部——不是把几省凑起来叫大州，是本来一片地，一套三司管不过来</b>：荆即明湖广一省（清分鄂湘而总督仍曰湖广）、益之川渝本一省而滇与川以金沙江相接（茶马铜运一线）、营即满洲故地（清置盛京吉林黑龙江三将军同出一源）、江之赣闽隔武夷而市相通、交则非旧制之合乃治法之同（桂黔交皆土司杂处）。<b>且这五处习惯上本来就有总督巡抚——本朝之大州刺史，是把总督之实收进了刺史之名，不是新设一层。</b>江州分江左（闽）／江右（赣），荆州分荆（鄂）／湘，益州分<b>西川</b>（川）／<b>东川</b>（渝）／<b>云南</b>（滇），<b>交州分桂（广西）／黔（贵州）／交（交趾）</b>，营州分辽／吉／黑（外东北由安东大都护府直辖，不设三司）。<b>交州由中州升大州</b>——十四郡跨三省、土司之多冠全国、南三郡当南洋都护府之门户，中州之秩力有不逮。",
+     officers:[
+      {n:"刺史（都督X州诸军事兼X州牧）", r:"从一位", role:"长", from:"原", note:"皇帝直派。<b>免来暮评，仍行去思评</b>"},
+      {n:"别驾（布政使）", r:"正二位", role:"副", from:"原"},
+      {n:"长史（按察使）", r:"正二位", role:"副", from:"原"},
+      {n:"司马（都指挥使）", r:"正二位", role:"副", from:"原"},
+      {n:"治中从事（八曹长官）", r:"从三位", role:"判", from:"原"},
+      {n:"录事参军", r:"正六位", role:"属", from:"补"},
+      {n:"州主簿・州判官", r:"从六位", role:"属", from:"补"},
+      {n:"州推官・经历", r:"正七位", role:"属", from:"补"},
+      {n:"照磨・知事・典书", r:"从八位／流外", role:"吏", from:"补"}
+     ]},
+    {name:"中州（十）", rank:"正二位", cat:"地方",
+     desc:"刺史正二位，持节、都督本州军务。三司由别驾、长史、司马充任。<b>冀・雍・并・凉・幽・豫・徐・北扬・南扬・广</b>——<b>交州已升大州，中州由十一减为十</b>。",
+     officers:[
+      {n:"刺史", r:"正二位", role:"长", from:"原", note:"皇帝直派。免来暮评，仍行去思评"},
+      {n:"别驾・长史・司马（三司长官）", r:"从二位", role:"副", from:"原"},
+      {n:"治中从事（八曹长官）", r:"正四位", role:"判", from:"补"},
+      {n:"录事参军", r:"正六位", role:"属", from:"补"},
+      {n:"州主簿・州判官", r:"从六位", role:"属", from:"补"},
+      {n:"经历・照磨", r:"正七位／从八位", role:"属", from:"补"}
+     ]},
+    {name:"小州（青・兖＝山东）", rank:"正二位", cat:"地方",
+     desc:"<b>山东何以分两州：人多。</b>其地富庶而户口甲于天下，一州之官治之不给；又古本有青、兖二州之名，故分之。<b>三司两套，州各一套</b>——不是二州分充一套，是二州各有一套：青州别驾为山东左布政使、兖州别驾为山东右布政使，长史各为按察使、司马各为都指挥使。<b>「山东」遂如「湖广」：旧省之名，今为两省</b>；布政使之分左右，不是一衙之正副，是两衙之东西。<br><b>山东巡抚，即青兖二州之刺史</b>——巡抚不在刺史之上，<b>巡抚就是那个刺史</b>，只是一人兼两州，故不称刺史而称巡抚。<b>全国巡抚止此一员</b>；中州、大州之刺史即巡抚、总督，别处不另设。",
+     officers:[
+      {n:"山东巡抚", r:"正二位", role:"长", from:"修", note:"与中州刺史同品。<b>全衔：假节，行青兖二州刺史事兼察院右副都御史，提督山东等处军务兼巡理粮饷</b>。<b>何以是「行」</b>：一人兼两州刺史本非常制，是权宜不是定员，故不实授一州而以「行……刺史事」出之。<b>「假节」正配「行」</b>——假者借也、行者代也，借来的节配代行的职，名实相当。<b>有事则可加使持节</b>（海警、教乱、漕断之类），事已复旧——<b>节可以临时进，衔不改</b>"},
+      {n:"青州别驾（山东左布政使）", r:"正三位", role:"副", from:"修"},
+      {n:"兖州别驾（山东右布政使）", r:"正三位", role:"副", from:"修"},
+      {n:"青州长史（按察使）", r:"正三位", role:"副", from:"修"},
+      {n:"兖州长史（按察使）", r:"正三位", role:"副", from:"修", note:"<b>非副</b>——青兖各一套三司"},
+      {n:"青州司马（都指挥使）", r:"正三位", role:"副", from:"修"},
+      {n:"兖州司马（都指挥使）", r:"正三位", role:"副", from:"修", note:"<b>非同知</b>——青兖各一套三司"}
+     ]},
+    {name:"郡", rank:"正四／正五位", cat:"地方",
+     desc:"上郡郡守正四位，下郡正五位。郡守＋郡三司＋八曹参军。<b>两评俱行，中旨于来暮评加一等。</b>",
+     officers:[
+      {n:"郡守（上郡／下郡）", r:"正四位／正五位", role:"长", from:"原"},
+      {n:"郡丞", r:"从五位", role:"副", from:"补"},
+      {n:"郡别驾・长史・司马", r:"正五位", role:"副", from:"补"},
+      {n:"参军（八曹长官）", r:"从六位", role:"判", from:"原"},
+      {n:"郡主簿", r:"从七位", role:"属", from:"补"},
+      {n:"郡录事", r:"从八位", role:"属", from:"补"},
+      {n:"郡掾（各曹下属）・司户司田司功", r:"正八位", role:"属", from:"补"}
+     ]},
+    {name:"县", rank:"正六／正七／正八位", cat:"地方",
+     desc:"上中下三等。八曹长官为掾。两评俱行。",
+     officers:[
+      {n:"县令（上／中／下县）", r:"正六位／正七位／正八位", role:"长", from:"补"},
+      {n:"县丞", r:"正七位", role:"副", from:"原"},
+      {n:"掾（八曹长官）", r:"从八位", role:"判", from:"修", note:"原作「椽」，椽者屋木也；属官正作「掾」"},
+      {n:"主簿", r:"正九位", role:"属", from:"补"},
+      {n:"巡检", r:"从九位", role:"属", from:"补"},
+      {n:"〔县尉已改隶宪兵监〕", r:"—", role:"—", from:"修", note:"捕权不在县。县令无捕快，故不能压投匦之人"},
+      {n:"〔典史废，狱归刑部都官司〕", r:"—", role:"—", from:"修", note:"旧制典史未入流而兼掌缉捕、监狱，权重无制；今拆为捕（宪兵监）、狱（刑部）、审（推官）三家"},
+      {n:"驿丞・河泊所大使", r:"未入流", role:"吏", from:"补"}
+     ]}
+   ]},
+
+  {name:"翰林院", rank:"正三位", cat:"翰林",
+   desc:"<b>本朝之社会科学院，兼储才之地</b>。与将作寺（科学院）分掌两端：<b>将作主格物，翰林主人事</b>——史、经、政书、律例、方志、列国之志，皆出本院。<br><b>《本纪》《诸志》《列国志》《海国春秋》，即翰林院所修。</b><br><b>储才</b>：新进士之尤者选为庶吉士，读书本院三年，散馆而后除授。<b>本朝之储相，十之七八出于此</b>——内阁既为政事堂所代，则翰林不复是入阁之阶，而仍是入政事堂之阶。<br>〔※ 与国子监之别：<b>国子监教未仕之人，翰林院养已仕之人。</b>〕<br><b>经制文章之功，本院验之</b>：凡以史、经、政书、律例、方志立功者，在官布衣一体，本院具验状，吏部稽勋司据以定勋拟爵。",
+   officers:[
+    {n:"掌院学士", r:"正三位", role:"长", from:"补"},
+    {n:"侍读学士・侍讲学士", r:"从三位", role:"副", from:"补"},
+    {n:"侍读・侍讲", r:"正五位", role:"属", from:"补", note:"<b>经筵进讲</b>。天子之学在此，非在师傅私第"},
+    {n:"史馆总裁（差遣）", r:"—", role:"属", from:"补", note:"修前朝史、本朝实录。<b>实录成而藏之，非帝所得见</b>"},
+    {n:"修撰・编修・检讨", r:"从六位／正七位／从七位", role:"属", from:"补", note:"分纂本纪、诸志、表、列国志"},
+    {n:"庶吉士", r:"未入流（待除）", role:"属", from:"补", note:"<b>储相之所自出</b>。新进士之尤者选入，读书三年，散馆而后除授；不称职者出为郡县"},
+    {n:"典籍・待诏・孔目", r:"从八位／流外", role:"吏", from:"补"}
+   ], children:[]},
+
+  {name:"国子监（文・武）", rank:"从三位", cat:"地方",
+   desc:"<b>国子监分文、武二监</b>。隶礼部学部司。<br><b>文国子监</b>：太学之正，生员曰监生；荫叙入监者亦在此。<br><b>武国子监</b>：即<b>陆军学堂与海军学堂</b>——本朝武官之所出。<b>武举与文举，考试之制全同</b>（县・府／道／国・院三场童试，乡试、会试、殿试四级；分闱分额一如文闱），唯所试者弓马、韬略、算学、船械、舆图。<br>〔奥斯曼穆斯塔法所立之军校，法即出于此。〕",
+   officers:[
+    {n:"祭酒（文・武各一）", r:"从三位", role:"长", from:"补"},
+    {n:"司业", r:"正四位", role:"副", from:"补"},
+    {n:"监丞・博士・助教・学正・学录", r:"正五位以下", role:"属", from:"补"},
+    {n:"武学教授（韬略・弓马・算学・船械・舆图）", r:"正六位", role:"属", from:"补"},
+    {n:"海军学堂监督", r:"正四位", role:"属", from:"补", note:"隶武国子监，而教习多出四海舰队"},
+    {n:"典簿・典籍", r:"从八位", role:"吏", from:"补"}
+   ], children:[]},
+
+  {name:"学校与试事", rank:"—", cat:"地方",
+   desc:"<b>本朝不别设提督学政</b>——<b>内地学校考试之政，即州之礼曹</b>：州礼曹治中主之，郡礼曹参军、县礼掾承之。<b>不新设衙门，用现成的曹。</b><br>边地则不然：<b>都护府辖境与属国之乡试，由驻在大臣、大都护亲判</b>（见〈考课选举志·八之一〉）。",
+   officers:[
+    {n:"州礼曹治中从事", r:"从三位（大州）／正四位（中小州）", role:"长", from:"修", note:"<b>即学政</b>。掌一州之学额籍、院试、岁科两考；乡试为提调"},
+    {n:"郡礼曹参军", r:"正六位", role:"属", from:"修", note:"掌郡学、府试"},
+    {n:"县礼掾", r:"正八位", role:"属", from:"修", note:"掌县学、县试"},
+    {n:"乡试主考・同考", r:"差遣", role:"属", from:"补", note:"<b>差遣，非常设</b>。内地由礼部与本州礼曹会请，考毕即罢"},
+    {n:"会试总裁・同考", r:"差遣", role:"属", from:"补", note:"两京各一班。<b>按地域分棚而阅</b>"},
+    {n:"殿试读卷官", r:"差遣", role:"属", from:"补", note:"政事堂堂官与三省长官充之——<b>内阁既为政事堂所代，读卷亦归政事堂</b>"},
+    {n:"郡学教授・县学教谕・训导", r:"从八位／正九位", role:"属", from:"补"}
+   ], children:[]},
+
+  {name:"土官（土司）", rank:"从三位以下", cat:"地方",
+   desc:"<b>土司者，各部族自管之土官</b>，非朝廷所除，世袭其职。<br><b>本朝不行强制改土归流。</b>——改流而夺其世业，是以朝廷之便夺人之自治，非本朝之体。<br><b>然亦不能听其自外。</b>故行三事：<b>遣官宣教</b>（教化、译书、医药）、<b>修路</b>、<b>开其生业</b>。<br><b>改土归流之前提，是人家有得玩。</b>——路通、学立、市起，其子弟能应科举、能出仕、能经商，则土职自轻，归流乃水到渠成；未至而强改，是抢。<br><b>又开一途：土司得自请由文职改武职，领本部之众出边开拓。</b>阶不降、世业不夺，而所守者由一寨一峒变为一方新土——<b>不废其路，另开一路，旧路自己就空了。</b>",
+   officers:[
+    {n:"宣慰使（宣慰使司）", r:"从三位", role:"长", from:"补", note:"最大之土职。世袭，袭替须朝廷验封"},
+    {n:"宣抚使（宣抚司）", r:"从四位", role:"长", from:"补"},
+    {n:"安抚使（安抚司）", r:"从五位", role:"长", from:"补"},
+    {n:"招讨使（招讨司）", r:"从五位", role:"长", from:"补"},
+    {n:"长官司长官・副长官", r:"正六位／从七位", role:"长", from:"补"},
+    {n:"土知郡・土知县・土巡检", r:"正五位以下", role:"长", from:"补", note:"郡县之职而以土人世袭者"},
+    {n:"经历・儒学教授（流官）", r:"正八位", role:"属", from:"补", note:"<b>朝廷所遣</b>：宣教、译书、办学。<b>不夺其政，只开其学</b>"},
+    {n:"〔改武职者〕土司都指挥・卫指挥使", r:"从三位／正四位", role:"长", from:"补", note:"<b>自请改武职、领本部出边者授此</b>。阶不降，世业不夺；所领之众即其本部子弟（狼兵、白杆之属）"}
+   ], children:[]},
+
+  {name:"两京防卫特设", rank:"—", cat:"京防",
+   desc:"京师三角：光禄寺掌宫禁之内（郎官宿卫，位高兵少）、卫尉寺掌宫城至京城（八校尉与五城兵马司，兵多位低）、八校尉为天子亲军（双重管辖）。位高者兵少且在内，兵多者位低且在外，最能战者谁也调不动——三角咬死。",
+   officers:[], children:[
+    {name:"北京防卫", rank:"—", cat:"京防", desc:"顺天府三套体系叠加。",
+     officers:[
+      {n:"卫尉寺卿", r:"正二位", role:"长", from:"原", note:"城内军事。八校尉与五城兵马司"},
+      {n:"光禄寺卿", r:"从一位", role:"长", from:"修", note:"宫禁之内与通政"},
+      {n:"宪兵监都指挥使", r:"正二位", role:"长", from:"修", note:"城内治安、缉捕（公安部）"},
+      {n:"锦衣卫指挥使", r:"正二位", role:"长", from:"原", note:"皇帝直属暗查"}
+     ]},
+    {name:"南京防卫", rank:"—", cat:"京防", desc:"应天府。<b>淮南节度使＋南京操江提督＋南京兵部尚书（留守）三方共管军政；别有南京镇守太监，为皇权之代表</b>。<b>三人管事，一人管「在」</b>——镇守太监不带兵、不理民、不预军政，只代天子之身；天下镇守太监止此一员。",
+     officers:[
+      {n:"淮南节度使", r:"正二位", role:"长", from:"修"},
+      {n:"南京操江提督", r:"正二位", role:"长", from:"原", note:"统长江水师"},
+      {n:"南京守备太监（镇守）", r:"正三位", role:"长", from:"原", note:"<b>皇权之代表</b>。守孝陵、掌留都宫阙玺印。<b>不带兵、不理民、不预军政</b>——详见〈内廷·二十四衙门〉"},
+      {n:"南京兵部尚书（留守）", r:"正二位", role:"长", from:"补"},
+      {n:"南京操江参将・游击将军", r:"正三位／从三位", role:"属", from:"补"}
+     ]}
+   ]}
+]};
+
+/* ===== 散官・勋爵 ===== */
+const WEN_SAN=[["正一品","初授","特进荣禄大夫"],["正一品","升授","特进光禄大夫"],["从一品","初授","荣禄大夫"],["从一品","升授","光禄大夫"],["正二品","初授","资善大夫"],["正二品","升授","资政大夫"],["正二品","加授","资德大夫"],["从二品","初授","中奉大夫"],["从二品","升授","通奉大夫"],["从二品","加授","正奉大夫"],["正三品","初授","嘉议大夫"],["正三品","升授","通议大夫"],["正三品","加授","正议大夫"],["从三品","初授","亚中大夫"],["从三品","升授","中大夫"],["从三品","加授","大中大夫"],["正四品","初授","中顺大夫"],["正四品","升授","中宪大夫"],["正四品","加授","中议大夫"],["从四品","初授","朝列大夫"],["从四品","升授","朝议大夫"],["从四品","加授","朝请大夫"],["正五品","初授","奉议大夫"],["正五品","升授","奉政大夫"],["从五品","初授","奉训大夫"],["从五品","升授","奉直大夫"],["正六品","初授","承直郎"],["正六品","升授","承德郎"],["从六品","初授","承务郎"],["从六品","升授","儒林郎／宣德郎（吏出身）"],["正七品","初授","承事郎"],["正七品","升授","文林郎／宣议郎（吏出身）"],["从七品","初授","从仕郎"],["正八品","初授","迪功郎"],["正八品","升授","修职郎"],["从八品","初授","迪功佐郎"],["从八品","升授","修职佐郎"],["正九品","初授","将仕郎"],["正九品","升授","登仕郎"],["从九品","初授","将仕佐郎"],["从九品","升授","登仕佐郎"]];
+const WU_SAN=[["正一品","初授","大司马"],["正一品","升授","大将军"],["从一品","初授","骠骑将军"],["从一品","升授","骠骑大将军"],["正二品","初授","车骑将军"],["正二品","升授","金吾将军"],["正二品","加授","龙虎将军"],["从二品","初授","镇国将军"],["从二品","升授","定国将军"],["从二品","加授","奉国将军"],["正三品","初授","昭勇将军"],["正三品","升授","昭毅将军"],["正三品","加授","昭武将军"],["从三品","初授","怀远将军"],["从三品","升授","定远将军"],["从三品","加授","安远将军"],["正四品","初授","明威将军"],["正四品","升授","宣威将军"],["正四品","加授","广威将军"],["从四品","初授","宣武将军"],["从四品","升授","显武将军"],["从四品","加授","信武将军"],["正五品","初授","武德将军"],["正五品","升授","武节将军"],["从五品","初授","武略将军"],["从五品","升授","武毅将军"],["正六品","初授","昭信校尉"],["正六品","升授","承信校尉"],["从六品","初授","忠显校尉"],["从六品","升授","忠武校尉"]];
+/* 勋：其身之所功，十二转。 */
+const XUN=[
+ ["正一品","<b>上柱国</b>","上柱国","勋之极。十六家殉国者全衔皆带之"],
+ ["从一品","柱国","柱国","—"],
+ ["正二品","上护军","正治上卿","与<b>开国县男</b>同品"],
+ ["从二品","<b>护军</b>","正治卿","归附诸族之勋常至于此——<b>勋不限，爵卡在县子县男</b>"],
+ ["正三品","<b>上轻车都尉</b>","资治尹","<b>爵降接勋之第一阶</b>：县男之后无功，落此"],
+ ["从三品","轻车都尉","资治少尹","—"],
+ ["正四品","上骑都尉","赞治尹","—"],
+ ["从四品","<b>骑都尉</b>","赞治少尹","<b>爵降之底</b>：落至此不复降，仍有禄、仍得应举从军、仍是官身"],
+ ["正五品","骁骑尉","修正庶尹","—"],
+ ["从五品","飞骑尉","<b>协正庶尹</b>","<b>文勋之始</b>：文勋十转，自此而上，无六品——小于一郡之文功只记考课，不转勋"],
+ ["正六品","云骑尉","—","—"],
+ ["从六品","武骑尉","—","常功转勋之始"]];
+/* 爵：其家之所积。子男以县为号（流内，一身之号）；伯以上以国郡为号（超品，一家之号） */
+const JUE=[
+ ["<b>郡王 ＝ 国公</b>","超品","国号／郡号","安社稷之功，挽王朝于既倒；千秋功业，撑帝国半边天","<b>社稷之功</b>","上柱国（正一品）"],
+ ["<b>侯</b>","超品","郡号","开疆拓土、定一方之大局；平定跨州之大乱","<b>督师平定大乱，或定下国家大政</b>","正治卿・正治上卿（二品）"],
+ ["<b>伯</b>","超品","郡号","收复失地／大战役主功／独守一郡不失。<b>自伯以上，始为「一家」</b>","<b>跨州之功，或一项国政推行天下</b>（如摊丁、修律成书）；<b>以约得地</b>","资治少尹・资治尹（三品）"],
+ ["<b>子</b>（开国县子）","正一品","县号","斩将夺旗、破阵之首功","<b>一州之功</b>","赞治少尹・赞治尹（四品）"],
+ ["<b>男</b>（开国县男）","正二品","县号","一战之首功，先登陷阵而破其阵者","<b>一郡之功</b>","协正庶尹・修正庶尹（五品）"],
+ ["〔不给爵〕","—","—","斩首（斩敌≥50、≥100 之数入此，以定转数）、先登、守御之常功——<b>只转勋，不动爵</b>","小于一郡之功——只记考课","—"]];
+
+/* ===== 渲染 ===== */
+const treePane=document.getElementById('pane-tree');
+const detailEl=document.getElementById('detail');
+let nodePathMap=new Map();
+function buildPaths(n,p=[]){const np=[...p,n];nodePathMap.set(n,np);(n.children||[]).forEach(c=>buildPaths(c,np));}
+buildPaths(GUANZHI);
+
+function renderTreeNode(node){
+  const div=document.createElement('div');div.className='tree-node';
+  const has=(node.children||[]).length>0;
+  const row=document.createElement('div');row.className='tree-row';row.dataset.nodeName=node.name;
+  row.innerHTML=`<span class="tree-toggle">${has?'▸':' · '}</span><span class="tree-name">${node.name}</span>`+
+    (node.rank?`<span class="tree-rank">${node.rank}</span>`:'')+
+    ((node.officers&&node.officers.length)?`<span class="tree-tag">${node.officers.length}</span>`:'');
+  let childrenEl;
+  row.addEventListener('click',e=>{
+    if(has&&(e.target.closest('.tree-toggle')||true)){
+      if(e.target.closest('.tree-toggle')){
+        childrenEl.classList.toggle('collapsed');
+        row.querySelector('.tree-toggle').textContent=childrenEl.classList.contains('collapsed')?'▸':'▾';
+        return;
+      }
+    }
+    showDetail(node);
+    document.querySelectorAll('.tree-row.selected').forEach(r=>r.classList.remove('selected'));
+    row.classList.add('selected');
+    if(has&&childrenEl.classList.contains('collapsed')){
+      childrenEl.classList.remove('collapsed');
+      row.querySelector('.tree-toggle').textContent='▾';
+    }
+  });
+  div.appendChild(row);
+  if(has){
+    childrenEl=document.createElement('div');childrenEl.className='tree-children collapsed';
+    node.children.forEach(c=>childrenEl.appendChild(renderTreeNode(c)));
+    div.appendChild(childrenEl);
+  }
+  return div;
+}
+GUANZHI.children.forEach(c=>treePane.appendChild(renderTreeNode(c)));
+
+function showDetail(node){
+  const path=nodePathMap.get(node)||[node];
+  const bc=path.map(n=>`<span>${n.name}</span>`).join('');
+  const off=node.officers||[],ch=node.children||[];
+  let oh='';
+  if(off.length){
+    const rows=off.map(o=>`<tr class="${o.from==='补'?'supl':(o.from==='修'?'rev':'orig')}">
+      <td class="col-name">${o.n}</td><td class="col-rank">${o.r||''}</td>
+      <td class="col-role">${o.role||''}</td><td class="col-note">${o.note||''}</td></tr>`).join('');
+    oh=`<table class="officer-table"><thead><tr><th>官名</th><th>品级</th><th>序</th><th>说明</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  let chh='';
+  if(ch.length){
+    chh=`<h3>下属机构</h3><div class="sub-children">${ch.map(c=>`
+      <div class="sub-child" onclick="showByName('${c.name.replace(/'/g,"\\'")}')">
+        <div class="sc-name">${c.name}</div>
+        <div class="sc-meta">${c.rank||''} · ${(c.officers||[]).length} 职</div>
+        ${c.desc?`<div class="sc-desc">${c.desc.slice(0,60)}${c.desc.length>60?'…':''}</div>`:''}
+      </div>`).join('')}</div>`;
+  }
+  detailEl.innerHTML=`<h2>${node.name}${node.today?`<span class="today">今：${node.today}</span>`:''}</h2>
+    <div class="meta">${node.rank||'—'} ${node.cat?'· '+node.cat:''}</div>
+    <div class="path">${bc}</div>
+    ${node.desc?`<div class="desc">${node.desc}</div>`:''}${oh}${chh}`;
+}
+window.showByName=name=>{
+  const find=n=>n.name===name?n:(n.children||[]).reduce((a,c)=>a||find(c),null);
+  const n=find(GUANZHI); if(!n) return;
+  const path=nodePathMap.get(n)||[];
+  document.querySelectorAll('.tree-row').forEach(r=>{
+    if(path.some(p=>p.name===r.dataset.nodeName)){
+      const nx=r.nextElementSibling;
+      if(nx&&nx.classList.contains('tree-children')){nx.classList.remove('collapsed');r.querySelector('.tree-toggle').textContent='▾';}
+    }
+  });
+  showDetail(n);
+  setTimeout(()=>{const s=[...document.querySelectorAll('.tree-row')].find(r=>r.dataset.nodeName===name);
+    if(s){document.querySelectorAll('.tree-row.selected').forEach(r=>r.classList.remove('selected'));s.classList.add('selected');s.scrollIntoView({block:'center',behavior:'smooth'});}},50);
+};
+showDetail(GUANZHI);
+
+/* ===== 静态面板 ===== */
+function tbl(head,rows){return `<table class="t"><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;}
+
+document.getElementById('pane-rank').innerHTML=`
+<h2>品阶 · 勋爵</h2>
+<p><b>职事官用「位」，散官、勋、爵用「品」。</b>位者职，品者阶——二者分离，故有位卑而品高、品低而位重者。</p>
+<h3>长・副・判递降之法</h3>
+<p><b>递降之疏密，视其衙能否分权而定——代得了的靠得近，代不了的隔得开。</b></p>
+${tbl(['节奏','衙','理'],[
+['<b>半阶</b>（正→从→正）','三省・御史台三院・枢密院・五军都督府・节度使・四海舰队・宪兵监','其副须能<b>即时代长</b>：宰相机构不可一日无主，监察须有冗余，军中主官阵亡须有人接'],
+['<b>整阶</b>（正二→正三→正四）','八部・十二寺','其长须<b>独任其责</b>：执行机关事权归一，否则政出多门']])}
+<h3>文散官</h3>${tbl(['品','授','散官'],WEN_SAN)}
+<h3>武散官</h3>${tbl(['品','授','散官'],WU_SAN)}
+<h3>勋 · 爵：两梯不相统摄</h3>
+<p><b>勋纪其身之所功，爵纪其家之所积。</b>勋之某转不是某爵之起点——常功只转勋，大功乃给爵；一人可以勋至护军而爵止县男，亦可以爵袭国公而身无一转。<b>两梯只在底下相接</b>：勋贵之爵代各一考，无功则降，<b>郡王／国公 → 侯 → 伯 → 子 →（宽两代）→ 男 → 上轻车都尉 → 骑都尉</b>，至骑都尉不复降。〔详《宗室勋贵志》附〈爵勋之制〉〕</p>
+<h3>勋官十二转</h3>${tbl(['品','武勋','文勋','与爵之接'],XUN)}
+<h3>爵之等与其门槛</h3>${tbl(['爵','品','号','武功','文功','文功所转之勋'],JUE)}
+<p style="font-size:12px;color:#7a2f1e">〔郡王与国公同阶：国公冠国名，郡王冠郡名，皆勋贵。亲王宗室专有，不在此列〕</p>
+<h3>文功</h3>
+<ul>
+<li><b>文官不能打仗，其功在利及天下。</b>治、赈、河、律、约，及<b>格物之学</b>（历算、机器、农种、医药）——凡有利于全国者，皆有勋有爵。</li>
+<li><b>文功以其利所及之广狭为尺</b>：一郡 → 男，一州 → 子，跨州或一政行于天下 → 伯，督师平乱或定国家大政 → 侯，社稷 → 国公・郡王。<b>一功两赏：勋纪其身，爵纪其家。</b></li>
+<li><b>勋以功累，爵以功进。</b>勋可累计，功积则转；爵不累计，而<b>已有之爵再立新功即进一等</b>——名曰不累，实则仍累。新功之等本高于所进者，径授其等。</li>
+<li><b>布衣有大功，照样给。</b>不在官者一旦有功，勋爵并给，与在官者同尺；<b>得勋即是官身</b>。</li>
+<li><b>学之功，两院验之</b>：格物之功（历算、机器、农种、医药），<b>将作寺</b>验之；经制文章之功（史、经、政书、律例、方志），<b>翰林院</b>验之。两院具验状，稽勋司据以定勋、拟爵——<b>学问之真伪由懂学问的人说，功之大小由管功的人定。</b></li>
+<li><b>以约得地，同于以战得地</b>：使臣定约而得地者，其功同于收复失地。</li>
+<li><b>科举不算功。</b>进士者出身，非功也——故文臣之家子孙多能读书为官，而爵两三代即落至勋官；武臣之家反之。<b>文家保官不保爵，武家保爵不保官。</b></li>
+<li><b>文臣之家落底，分班</b>：守正文臣之家，男 → 资治尹（正三品）→ 赞治少尹（从四品）止；宣力武臣之家，男 → 上轻车都尉 → 骑都尉止。品同而班异，以其功臣号定之。</li>
+<li>验文功者，<b>吏部稽勋司</b>。考功问「称不称职」而定其位，稽勋问「做成了什么」而定其勋——两司不相兼。</li>
+</ul>
+<p style="font-size:12px;color:#7a2f1e">〔赠与袭：赠者死者之哀荣，止于其身；袭者其家之号，代各一考。故殉国诸家多「赠郡王而其家袭国公或侯」。〕</p>
+<div class="quote"><b>此表亦是风险曲线。</b>爵至国公・郡王而止（亲王宗室专有），勋至上柱国，阶至大将军——军功至顶者三梯同时到头，上升之路即绝，所谓「赏无可赏」。惟外扩之空间未闭，则通道常开；空间一闭，或战事由开疆转为消耗（战果不可指认），则同样之血换不来同样之爵，<b>汇率崩而全套军权三锁皆为纸</b>。<br><br>爵勋分梯，正为缓此一崩：<b>勋可以发得宽，爵必须收得紧</b>——常功尽入勋，则爵之汇率不随战事之多寡而涨落。</div>`;
+
+document.getElementById('pane-tang').innerHTML=`
+<h2>政事堂 · 封驳 · 人事</h2>
+<h3>票决</h3>
+<ul>
+<li>三公（丞相、太尉、御史大夫）自动加同平章事，<b>一人三票</b></li>
+<li>其他同平章事，<b>一人二票</b></li>
+<li>参知政事（三省、枢密院、御史台副官自动加），<b>一人一票</b></li>
+<li>判官只有建议权，无投票权</li>
+</ul>
+<h3>事务分级</h3>
+<ul><li>常务：三省判官＋三省都给事中合署</li>
+<li>中务：三省副官之一／全部合署</li>
+<li>大事：开政事堂，三公合署</li></ul>
+
+<h3>封驳：两驳一决</h3>
+<p>门下封驳只驳两次，第三次失效。<b>此非抑门下，乃防死锁</b>——不许无限拒绝，亦不许无限重发。两驳之后，举证之责自门下转于政事堂：前两轮门下举瑕疵，第三轮政事堂须拿出一个无瑕疵的本子。</p>
+<div class="quote">侍中虽坐政事堂，然封驳之实际执行者为<b>给事中、散骑常侍</b>，非侍中本人。侍中在堂上定大方向，属官在文本上核细节，两层不相冲突。</div>
+<p><b>驳必尽言</b>：门下初驳须一次列尽所见瑕疵。<b>初驳未言者，再驳不得复言</b>——否则门下可挤牙膏，两驳之限形同虚设。</p>
+<p><b>三驳存档</b>：第三次之驳虽不能阻诏，然<b>驳状随诏入档，永为凭据</b>，与诏并存于起居注、门下籍。他日事败，此状即是收条。</p>
+<p><b>中旨亦入此制</b>：中旨可以不经政事堂，但不能不合体例。门下于中旨仍得两驳。</p>
+
+<h3>人事三段</h3>
+${tbl(['层','法','范围'],[
+['<b>皇帝直派</b>','中旨直除，无需三省同意','三省主官副官判官、八部尚书侍郎、十二寺卿少卿、御史台三院主官、枢密院／五军／都护府主官、地方刺史。<b>叫你去哪你就去哪</b>'],
+['<b>廷推</b>','开政事堂廷推，吏部尚书有推荐与初选权','中级官员'],
+['<b>吏部除授</b>','不开堂，文选／武选司郎中推荐，吏部／兵部尚书决定','下级官员']])}
+
+<h3>殿阁大学士：官定其事，殿定其位</h3>
+<p>三大殿曰<b>奉天、华盖、谨身</b>（复洪武之旧，不用嘉靖所改之皇极、中极、建极）。殿阁大学士之号随之而正，凡七等——<b>非官，乃班次</b>。</p>
+${tbl(['次','殿阁','所加之官','省'],[
+['<b>一</b>','<b>奉天殿大学士</b>','<b>尚书令</b>','<b>三省之长</b>'],
+['<b>二</b>','华盖殿大学士','侍中','门下省之长'],
+['<b>三</b>','谨身殿大学士','中书令','中书省之长'],
+['<b>四</b>','文华殿大学士','尚书左仆射','尚书省之贰（左）'],
+['<b>五</b>','武英殿大学士','尚书右仆射','尚书省之贰（右）'],
+['<b>六</b>','文渊阁大学士','中书侍郎','中书省之贰'],
+['<b>七</b>','东阁大学士','门下侍郎','门下省之贰']])}
+<div class="quote"><b>三省之长贰，其职相亚而其权相制；孰先孰后，在官名上看不出来——殿阁大学士，正是替这件事定次序的。</b>同是同平章事，挂奉天殿者立于前，挂东阁者立于后：<b>一殿之差，即一班之差。</b>官定其事，殿定其位。</div>
+<p><b>奉天殿一号为本朝所增，明不以授人</b>——奉天殿是朝会正殿、天子所御；文渊、东阁以下皆非天子所居之殿，故可以为人臣之号。本朝独以奉天殿授尚书令，<b>是把「谁是首相」写在了殿名上</b>：他站的地方，离那把椅子只隔一级。</p>
+<div class="quote">而正因为直白，它反倒是安全的。<b>一个说不清谁是首相的朝廷，人人都可以是首相；一个把首相写在殿名上的朝廷，那个人一举一动，天下都在看。——权之可畏，不在它大，在它藏。</b></div>
+<p><b>唐制尚书令以太宗尝居之而虚置，本朝不虚，且以天子之正殿为其号</b>——一个避之唯恐不及，一个偏偏两样都给。其别不在胆量，在制度：唐之尚书令一人总六部而无人能驳他；<b>本朝之尚书令，其令须经中书之拟、门下之驳</b>——他总的是三道工序，而那三道工序里有两道是专门用来拦他的。<b>名分给到顶，权柄卡在中间。</b></p>
+<p><b>三省之中何以以尚书为长？</b>本朝之三省不是三个衙门，是三道工序：中书治令，门下正谏，尚书行政。<b>而三者之中，只有尚书是要交东西出来的。</b>出令者可以再拟，封驳者可以再驳；那件事到底办没办成，只有尚书省一家没得推。<b>凡工序之中，最后交活的那一道最重；而总其成者，必出于最后交活的那一道。</b></p>
+
+<h3>行与守：一字定其称</h3>
+<p><b>官高于职曰「行」，官卑于职曰「守」。</b></p>
+${tbl(['例','其实'],[
+['<b>尚书令行吏部尚书</b>','尚书令在吏部尚书之上——<b>大官领小职，故曰行</b>'],
+['<b>光禄寺卿守侍中</b>','光禄寺卿从一位，侍中正一位——<b>卑官居高位，故曰守</b>（光禄寺卿例兼侍中、参知政事）']])}
+<div class="quote"><b>重人处轻位曰行，轻人处重位曰守。</b>一字之别，把「这个位子配不配他」写在了衔上——不冒认，也不亏待。</div>
+
+<h3>宰相群体</h3>
+<p>凡任<b>三省、枢密院、御史台</b>之主官、副官、判官者，皆入宰相群体——其人虽去职，终身以宰相视之。</p>
+${tbl(['层','所加','政事堂','出镇／罢相'],[
+['<b>主官</b>（中书令・侍中・尚书令・枢密使・御史大夫）<br><span style="opacity:.75">三省主官各加殿阁：尚书令<b>奉天殿</b>・侍中<b>华盖殿</b>・中书令<b>谨身殿</b></span>','<b>同中书门下平章事</b>（宰相）','三公三票／余二票','有'],
+['<b>副官</b>（三省侍郎・枢密同知・三院副都御史）<br><span style="opacity:.75">左仆射<b>文华殿</b>・右仆射<b>武英殿</b>・中书侍郎<b>文渊阁</b>・门下侍郎<b>东阁</b></span>','<b>参知政事</b>（副宰相）','一票','有'],
+['<b>判官</b>（中书舍人・散骑常侍・尚书丞・签书枢密院事・佥都御史）','<b>权参知政事</b>（储相）','有建议权，无票','<b>基本无</b>']])}
+<div class="quote"><b>储相无决策权，故亦不受罢免——此为潜规则。</b>无票即无责，无责即不倒。宰相群体中真正会被"出镇"的，只有同平章事与参知政事两层。<br>出镇不是贬，是<b>体面的罢相</b>：不夺其衔，只移其地。</div>
+
+<h3>出镇全衔构成法</h3>
+<p>全衔＝<b>［本相衔］＋［守·本官］＋［节钺］＋［都督某州诸军事］＋［州牧／刺史］＋［仪同］</b></p>
+${tbl(['出镇者','守','节钺','职','仪同'],[
+['<b>储相</b>（权参知政事）<br>出镇中州','本官前<b>加守</b>','假节钺','自动加一等，故为<b>州牧</b>（高于中州刺史常制）','开府'],
+['<b>储相</b>出镇大州','加守','假节钺','加一等正当从一位，故为<b>刺史</b>','开府'],
+['<b>副宰相</b>（参知政事）<br>出镇大州','加守','假节钺','<b>州牧</b>','仪同三司'],
+['<b>副宰相</b>出镇中州','加守','假节钺','<b>都督某某诸军事兼某某州牧</b>（得跨二州）','仪同三司'],
+['<b>副宰相</b>出镇都护府','加守','假节钺','<b>加一级任长史</b>，不任大都护；缺大都护时称<b>都护</b>','仪同三司'],
+['<b>宰相</b>（同平章事）／三公／三省主官','<b>不加守</b>','<b>假黄钺</b>','<b>都督某某诸军事兼／监某某州牧</b>','开府仪同三司']])}
+<h3>全衔例</h3>
+<div class="quote">
+<b>储相出镇中州</b>：权参知政事，守散骑常侍，开府。<br><br>
+<b>副宰相出镇二中州</b>：参知政事，守尚书左仆射，假节钺，都督交广二州诸军事兼交广二州牧，仪同三司。<br><br>
+<b>宰相出镇二中州</b>：同中书门下平章事，假黄钺，开府仪同三司，都督雍凉诸军事兼雍凉二州牧。<br><br>
+<b>宰相出镇大州</b>：同中书门下平章事，假黄钺，开府仪同三司，都督江州诸军事<b>监</b>江州牧，并提督海防。
+</div>
+<p>末例用「<b>监</b>」不用「兼」：大州刺史本从一位，分量已重，宰相出镇则<b>监</b>之而不夺其位；中州刺史正二位，故可径<b>兼</b>其牧。江州兼提督海防，则四海舰队之东南一部受其节制。</p>
+<div class="quote">
+<b>节钺三档</b>：假黄钺（宰相／三公）＞ 假节钺（副宰相、储相、大州刺史）＞ 持节（中州刺史）＞ 假节（山东巡抚，<b>行二州事者假节；有事得临时进为使持节，事已复旧</b>）。<br>
+<b>仪同三档</b>：开府仪同三司（宰相）＞ 仪同三司（副宰相）＞ 开府（储相）。<br><br>
+假黄钺者，<b>专杀</b>之权也——可不奏而诛节将；<b>非发兵之权</b>，发兵须枢密院军令与符。故宰相出镇都督二州，手中有刀而调不动兵。<br>
+出镇宰相之<b>去思评不定黜陟，只入档</b>——不能罢他，但会跟着他回朝。</div>
+
+<h3>本朝通例：可压不可抹</h3>
+${tbl(['处','压','不可抹'],[
+['门下三驳','第三驳不能阻诏','驳状随诏入档，永为凭据'],
+['三线会启','合算取中位，少数服从','异议随状录存，一并上呈，不得删'],
+['特旨保任','皇帝可强留民评不合格者','门下登记造册，岁终公布于朝'],
+['节度令必双签','战时节度使得先发后署','留后、观察不追署者，其异议随军报入档']])}
+<div class="quote"><b>权可以压过异议，不能销毁异议。</b>此制之下无人能全胜，但每一次失败都留着收条——本朝史官之所以可畏，正在于此。</div>`;
+
+document.getElementById('pane-kao').innerHTML=`
+<h2>考课选举 · 民评</h2>
+<div class="quote">纵制之要义：<b>中央出人，地方取舍</b>；<b>两重民评</b>（去任之地评考成，将赴之地评准入）；<b>民评只及牧民之官</b>。<br>立制之由：非为限君，实为君借民意以制官僚——刀口向下不向上。</div>
+
+<h3>六道工序（职权分立）</h3>
+${tbl(['序','事','主之者'],[
+['一 · 采','三线独立采样，会启合算，得原始评等','御史台查院（明）・锦衣卫（暗）・礼部学部司（士）'],
+['二 · 考','合评等与钱粮完欠、刑狱淹滞、户口增减诸项定考成','<b>吏部考功司</b>'],
+['三 · 拟','据考成拟候选三人，行来暮评','<b>吏部文选司</b>（武职：兵部武选司）'],
+['四 · 决','中级以上开政事堂廷推；下级由吏部尚书决','政事堂／吏部尚书'],
+['五 · 诏','中书出诏、门下封驳、尚书执行','三省'],
+['六 · 纠','采有伪、考有私、拟有党、决有情，皆得弹劾','御史台台、谏、查三院']])}
+<p><b>采之者不考，考之者不拟，拟之者不决，决之者不诏，而纠之者皆不在其列。</b>御史台不在人事之链上——三院之职在察与劾，无除授之权。</p>
+
+<h3>双重民评</h3>
+<p><b>去思评</b>（原任地，定考成）——典出去思碑，良吏去后百姓思之立石。任满前三月或调令下达一月内行之。<br>
+<b>来暮评</b>（拟任地，定准入）——典出「廉叔度，来何暮」。吏部拟候选三人，具履历与去思评等，行文拟任郡县公示三十日，得评最高者除授。三人皆不合格退回重拟；连退两次开政事堂廷推。</p>
+${tbl(['层','任命','来暮评','去思评'],[
+['京师堂上官','皇帝直派','免（无民可牧）','免'],
+['刺史、都护高官','皇帝直派','<b>免</b>','<b>行</b>'],
+['郡守、县令及以下','廷推／吏部除授','行（中旨加权）','行']])}
+
+<h3>八问对八曹</h3>
+${tbl(['曹','问目'],[['吏','差役是否公道，胥吏是否需索'],['户','赋税是否苛，加派是否横'],['礼','学堂庙祀是否修，士风是否振'],['兵','境内是否靖，兵役是否均'],['刑','讼狱是否冤滞，刑罚是否滥'],['工','道路桥梁堤堰是否治'],['民','赈济是否及时，户籍是否清'],['商','市易是否平，度量是否准']])}
+<p>每问九等：上上・上中・上下・中上・中中・中下・下上・下中・下下。八问合算得总评。</p>
+${tbl(['总评','处置'],[['上上・上中','越级迁；得荐入京职'],['上下・中上','常迁一级'],['中中','平调'],['中下','留任待考，不得迁'],['下上','降一级'],['<b>下中</b>','<b>罢，回吏部候勘</b>（去思）／<b>拒赴任</b>（来暮）'],['下下','罢，三年不叙；情重者付刑部']])}
+
+<h3>三线交叉验证 · 会启</h3>
+${tbl(['线','主之者','方式'],[
+['明线','御史台查院·巡按御史','州县设<b>采风匦</b>，钥在巡按，封存直送查院，地方不得开拆'],
+['暗线','锦衣卫','密访抽样，不告地方，不设定所'],
+['士线','礼部学部司·学政','率诸生分乡采录，具详状']])}
+<p><b>三线会启</b>：三线封状不得独启。查院、锦衣卫、学部司三方各持一钥，会同开拆，当场合算，各具押。取中位；若有二线相差一等以上，触发复勘。<b>三方有异议者，异议随状录存，不得删。</b></p>
+<div class="quote">采样三分而合算独归一处，则三分无益。明线隶御史台，暗线隶皇帝，士线隶尚书省礼部——本已分属三系，会启则使其在最后一步仍分属三系。</div>
+<p><b>分层定额</b>：每线采样须按士、农、工、商、军户五色分层，定额由御史台岁初颁下，地方不得增损。<br>
+<b>防伪</b>：匦状须署里甲名籍可覆查。伪造者本人依律，里长连坐；官员雇人投匦者以欺罔论加二等。</p>
+
+<h3>中旨与豁免</h3>
+<ul>
+<li><b>堂上官全免</b>：京官无治民之地，无民可调。此非特权，是无从行之。</li>
+<li><b>地方官中旨只作权重</b>：于来暮评加一等，<b>不得跨越黜陟线</b>——原评下下者加一等为下上，仍在罢黜线下。<b>中旨可扶一把，不能起死回生。</b></li>
+<li><b>特旨保任</b>：皇帝可强留民评不合格之地方官，<b>每岁限五人</b>，门下登记造册，岁终由查院具奏公布于朝，逾额须政事堂副署。<b>计数即是制衡。</b></li>
+</ul>
+
+<h3>考期</h3>
+${tbl(['名目','期','内容'],[['小考','一岁一','八问民评，只记录'],['大计','三岁一','去思评，定升降'],['通考','九岁一','三次大计合勘，定终身资序'],['<b>追思评</b>','去任后三岁','复采原任地之评，见其政之久效。优者追赠散官、荫一子入国子监；劣者虽已迁转仍追降']])}
+<div class="quote"><b>无追思评，则无人敢做痛而必要之事。</b>清丈田亩、治河修堤、加征军饷之属，当时必怨，久乃见德。此条不可省。</div>
+
+<h3>回避与边地</h3>
+<p><b>三互</b>：不得任本籍之郡；不得任妻家本籍之郡；前后任不得互为姻娅。否则来暮评即成宗族票仓。</p>
+${tbl(['地','考法'],[['四大都护府辖境','不行民评。以属部贡赋、边衅有无、道路通塞为考'],['土司杂处之郡','减行。民评占半，余半以户口增减、逃亡多寡为考'],['新附之地（十年以内）','不行民评，吏部直除']])}
+<p><b>边地优叙</b>：边郡任满一考抵内地两考；边郡任内中中以上者回内地免行来暮评一次；三任边郡者径叙京职。<br>〔来暮评行久必致肥缺挤破头、瘠土无人去，故立此。〕</p>
+
+<h3>制度后果</h3>
+<ul>
+<li><b>权重移于吏部而非御史台。</b>御史台无除授之权。真正分量骤增者是吏部——考功司得客观化之考课凭据，文选司三人拟单成为全国最要紧之一闸。</li>
+<li><b>贿赂自「买官」移为「买入围」。</b>末端既有民评把关，弊必上移至提名之前端。文选司郎中由此成为帝国最炙手可热之位置。幸而台院之<b>吏部都给事中（正六位）</b>专察吏部——以小制大，正是科道精义。</li>
+<li><b>官不敢为长策。</b>追思评是解药，但三年后才兑现，中间的空窗是所有故事发生的地方。</li>
+<li><b>合法性挂在「民评不可伪造」一个假设上</b>，一旦被证明可伪，整条链条从底端断裂。</li>
+</ul>`;
+
+document.getElementById('pane-bing').innerHTML=`
+<h2>兵　柄</h2>
+<h3>三级三线</h3>
+<p>军事系统自中央至军，同一三人单元层层套叠：<b>长＝军事主官，副＝政治主官，判＝参谋长</b>。指挥、监督、谋划三条线各自垂直贯通到底。</p>
+${tbl(['层','长（司令）','副（政委）','判（参谋长）'],[
+['<b>枢密院</b>·中央司令部','枢密使（太尉兼）','枢密同知','签书枢密院事'],
+['<b>五军都督府</b>·战区','大都督','都督同知','都督佥事'],
+['<b>节度使</b>·军','节度使','观察使','行军司马'],
+['<b>四海舰队</b>','提督','舰队都督同知','舰队都督佥事（原注即作「参谋」）']])}
+<p>观察使之上级为都督同知，非节度使——政治线独立。</p>
+
+<h3>军权三锁</h3>
+<ul>
+<li><b>兵</b>：枢密院掌发兵而不统兵，五军都督府统兵而不能发兵——<b>中央司令部不直接带兵而握启战之权，战区司令部带兵而不能自启战端</b>。内地四十一节度使受五军与本州刺史双重管辖，人事粮饷军籍全在中央——<b>不是让地方无兵，是让地方境内的兵不是地方的</b>。</li>
+<li><b>财</b>：州之钱在布政使（别驾兼），考课在吏部、审计在刑部比部司、账在户部与太府寺。州无自有财源。节度判官由户部除授。</li>
+<li><b>人事</b>：刺史不能自任郡守；中层廷推，下层吏部文选司；再加民评与三互法。<b>唐末藩镇能成，靠的正是自辟僚属——此路已堵。</b></li>
+</ul>
+<div class="quote">唐末之配方是兵、财、人事三样全给。本朝三样一样都没给全，只留一把节钺——<b>假黄钺是专杀之权，不是发兵之权</b>。故内地总督管两个中州亦不能反：手中有刀，调不动兵。</div>
+
+<h3>节度四职</h3>
+${tbl(['官','品','今','要则'],[
+['节度使','正二位','司令员','发兵须枢密院军令'],
+['节度副使·知留后事','从二位','副司令','中央除授，<b>不得由本镇军士推举</b>；不得同镇连任；军中私推者以谋逆论。节度使出缺则权知'],
+['观察使','从二位','政委','与留后同品，互不统属。留后出缺由观察权知，不得由节度使摄'],
+['行军司马','正三位','参谋长','掌兵机。谋出于观察与司马，令出于节度——<b>参谋不能下令，主官不能独谋</b>'],
+['节度判官','正五位','后勤','粮饷、军资、屯田。<b>户部除授</b>，账对户部与太府寺']])}
+
+<h3>镇下之兵：卫所编制</h3>
+<p>节度使<b>正二位</b>，与八部尚书、都督同知同位。<b>九边九镇及内地要冲之镇，所辖为师团；其余内地诸镇为旅团。</b></p>
+${tbl(['官','位','统','编制','日军阶'],[
+['节度使（九边・要冲）','正二位','两参将以上，四卫起','<b>师团</b>','中将'],
+['节度使（内地诸镇）','正二位','两卫以上，万人上下','<b>旅团</b>','少将'],
+['参将','正三位','分守一路，统两卫。唯师团级之镇设之','旅团','少将'],
+['游击将军','从三位','不守地，专机动，统一至二卫','加强联队','大佐'],
+['卫指挥使','正四位','一卫五所，约五千六百人','<b>联队</b>','大佐'],
+['卫指挥同知／佥事','从四位／正五位','副、参谋','—','中佐／少佐'],
+['千户／副千户','正五位／从五位','一千一百二十人','<b>大队</b>','少佐'],
+['百户／副百户','正六位／从六位','一百一十二人','<b>中队</b>','大尉／中尉'],
+['总旗','正七位','五十人','<b>小队</b>','少尉'],
+['小旗','从七位','数什','排','准尉・曹长'],
+['什长','无位','十人','班','军曹'],
+['伍长','无位','五人','副班','伍长']])}
+<p>此制与日军四单位师团一格一格相应：<b>两卫为一旅（参将或内地节度使），两旅为一师（九边・要冲节度使）</b>。日军下士官「伍长」「军曹」之名本出汉制，至此物归原主。</p>
+<div class="quote">武文对位：<b>一卫之主，一司之长</b>（卫指挥使＝诸司郎中，正四位）；<b>一所之主，一司之副</b>（千户＝员外郎，正五位）；<b>一镇之主，一部之长</b>（节度使＝尚书，正二位）。<br>本朝小旗不同于前明：前明小旗辖十人，本朝其下增什、伍，小旗乃辖数什。</div>
+<p><b>令必双签</b>：节度使署，观察使副署（政治可行），行军司马参署（军事可行）。战时急令节度使得先发后署，留后、观察随后追署；<b>不追署者，其异议入档</b>。</p>
+<div class="quote">唐之留后本是「节度使死、军士拥立副手代管、朝廷事后追认」的通道，藩镇世袭几乎全走此路；观察使则常被节度使自兼，兵民财一把抓。<br><b>本朝拿制造藩镇的那两个官职来防藩镇</b>——同一个名字，功能整个反过来。</div>
+
+<h3>五军＝五战区（十七州分尽）</h3>
+${tbl(['军','州','兼统','对口','镇'],[
+['<b>中军</b>','豫・荆・徐・北扬','南京防卫（淮南节度使・操江提督・守备太监）','—','11'],
+['<b>后军</b>','并・冀・幽','<b>卫尉寺・五城兵马司</b>（京城卫戍）','北庭','9'],
+['<b>左军</b>','青・兖・营','北海舰队','安东','7'],
+['<b>前军</b>','南扬・江・广・交','东海・南海・西海舰队','南洋','12'],
+['<b>右军</b>','雍・凉・益','—','安西・驻藏','11']])}
+<div class="quote"><b>后军守北京</b>（幽州辖顺天，京城卫戍随州而属）；<b>中军守南京与两京走廊</b>（北扬州治应天，徐州有淮南节度使）。二军互为对方之答案——北有变则南狩应天，中军接手；中军有异则后军据京城与九边四镇临之。<br><br>
+「中军」之「中」非中央，乃<b>居中</b>。它无边可守、无海可争，唯一职能是站在其余四军与京城之间——<b>防内不防外</b>。<br>
+而中军自身亦被防：八校尉编在卫尉寺（属后军），却是天子亲军、双重管辖；发兵之权又在枢密院。</div>
+<p>明制五军都督府本为军政机关（掌军籍卫所，不掌指挥；战时另派总兵挂印，战毕缴还）。本朝升为常设战区，<b>指挥之权遂常在战区</b>，所留于中央者是「发不发」而非「怎么打」——故必须配政治主官，否则下级被盯而上级不被盯，控制是倒的。</p>
+
+<h3>五十镇，其用四十有九</h3>
+<p><b>九边九镇 ＋ 内地四十一镇。十七州无一州无中央军，十七州州治无一治无镇。</b><br><span style="font-size:12px;color:#7a2f1e"><br></span></p>
+<div class="quote">《系辞》曰：「大衍之数五十，其用四十有九。」故本朝定为：<b>天下五十镇，而举兵之时必留一镇镇其本州，不得尽发。</b>用者常四十九，其一不用者，守家者也。<br>四十九之旧数由是不废，只是从「镇之总数」变成了「可发之数」。</div>
+${tbl(['镇','治','郡','州','战区'],[
+['<b>清夷</b>','怀来（宣府）','上谷郡','幽州','后军'],
+['<b>卢龙</b>','永平・山海关','渔阳郡','幽州','后军'],
+['<b>云中</b>','大同','云中郡','并州','后军'],
+['<b>雁门</b>','朔州・应州','雁门郡・代国','并州','后军'],
+['<b>延绥</b>','延安・榆林','延安郡・上郡','雍州','右军'],
+['<b>灵武</b>','宁夏','宁夏郡','凉州','右军'],
+['<b>泾原</b>','固原・平凉','安定郡','凉州','右军'],
+['<b>河西</b>','张掖・酒泉','张掖郡・酒泉郡','凉州','右军'],
+['<b>平卢</b>','辽阳・丹东','辽东郡','营州','左军']])}
+<div class="quote"><b>平卢归位。</b>唐平卢军本治营州柳城，安史之乱后南徙青州，「平卢」之名遂随人入齐。本朝复辽东，平卢还其故治；青州则留其南徙时所用之名——<b>淄青</b>。一去一还，六百年。</div>
+${tbl(['战区','镇（内地四十一）'],[
+['<b>中军</b>（11）','忠武（许州・颍川郡）｜河阳（洛阳・韩国）｜武昌（楚国）｜荆南（江陵郡）｜<b>襄阳</b>（襄阳郡）｜武安（长沙郡）｜武贞（武陵郡）｜淮北（淮安・东海郡）｜<b>淮南</b>（凤阳・淮南郡）｜庐江（庐江郡）｜镇海（南京・丹阳郡）'],
+['<b>后军</b>（5）','<b>晋阳</b>（太原・太原郡）｜昭义（潞州・上党郡）｜魏博（大名・赵国）｜成德（真定・常山国）｜永清（涿州・范阳郡）'],
+['<b>左军</b>（6）','淄青（青州・北海郡）｜<b>天平</b>（郓州・东平・泰山郡）｜咸平（开原・吉部）｜会宁（哈尔滨・会宁郡）｜宁海（大连・大连郡）｜<b>岭北</b>（黑河・龙江郡）'],
+['<b>前军</b>（12）','浙西（杭州・越国）｜浙东（金华・东阳郡）｜江右（南昌・豫章郡）｜浔阳（九江郡）｜闽海（福州・闽国）｜<b>江左</b>（建宁郡）｜赣南（赣州・南康郡）｜清海（广州・南海郡）｜高凉（高州・高凉郡）｜琼崖（琼崖郡）｜岭西（南宁・郁林郡）｜<b>黔中</b>（贵阳・牂牁郡）'],
+['<b>右军</b>（7）','永兴（西安・秦国）｜兴元（汉中郡）｜陇右（兰州・金城郡）｜西川（成都・潼川・蜀国）｜东川（重庆・巴郡）｜善阐（昆明・滇池郡）｜镇南（大理・云南郡）']])}
+<ul>
+<li><b>晋阳驻太原</b>：并州三镇——云中、雁门、昭义——皆在四围，独汾河谷地空着。太原为河东之腹、南北之枢，后军之纵深全在于此。镇不名「河东」者，本朝河东郡在平阳、解州，一图不容两「河东」；<b>郡曰太原，镇曰晋阳，一地两名而不相犯</b>。</li>
+<li><b>岭北驻黑河</b>，专对阿穆尔河与外东北。奉天不设镇——营州州治，如顺天例，由州治自守。</li>
+<li><b>江左驻建宁</b>：北扼分水关通江西铅山，东北通仙霞岭入浙江，南顺建溪下福州，闽浙赣三面之结点。山寇跨三省流窜，镇必设于三路交汇处。宋建州本为「建宁军节度」。</li>
+<li><b>襄阳</b>乃汉水上游、南北孔道，天下之腰膂。荆部原只武昌、江陵守长江，汉水一线全空。</li>
+<li><b>清海</b>（广州）与旧<b>静海</b>（交州）是史上「节度使自立」最著名的两个名号——刘氏据清海建南汉，吴权、丁部领据静海立国。本朝原样挂回。</li>
+<li>九边分属三军（后四・右四・左一），<b>无一军独吞长城线</b>；最大之前军十二镇，不敌其余三十八镇。</li>
+</ul>
+
+<h3>京师三角</h3>
+<ul>
+<li><b>光禄寺</b>掌宫禁之内（郎官宿卫，位从一位而兵少）</li>
+<li><b>卫尉寺</b>掌宫城至京城（八校尉、五城兵马司，兵多而位正二位）</li>
+<li><b>八校尉</b>为天子亲军，编在卫尉寺而心属天子（双重管辖）</li>
+</ul>
+<p>位高者兵少且在内，兵多者位低且在外，最能战的八支谁也调不动。章奏上行归光禄、诏令下行归中书通事舍人、御史台又得风闻直奏——三道分属，故光禄掐不断。</p>
+
+<h3>都护府：外得专断，内须勘合</h3>
+<p>四大都护府<b>得临机决断，对外用兵不待枢密军令</b>。边情瞬息，四千里外请令是取死之道；且都护府本是<b>军功机器</b>，不许其自打，则边功无所出、羁縻无所资、属部无所用。所置<b>经略招讨使</b>统属国诸部之兵——中亚五汗国、蒙古诸部、三部女真、南洋诸国之兵皆不在五军军籍，正为此设。</p>
+<p>故锁不设于「打不打」，设于<b>「往哪个方向打」</b>：</p>
+<ul>
+<li><b>兵符勘合</b>：都护府之兵入内地关塞，须枢密院符与关所勘合，二者相符乃得过。无合而入，关将不问所以，径以叛论——<b>此为都护府唯一之硬界</b>。</li>
+<li><b>述职有从数</b>：大都护入朝，扈从有定额，过额即夺节。</li>
+<li><b>内地四十一镇</b>：十七州无一州无中央军。边军纵破关而入，所对者非空国——<b>真当内地节度使是摆设？</b></li>
+</ul>
+<div class="quote">安禄山起兵靠的从来不是唐军，是同罗、奚、契丹的部落兵——兼三镇是名分，部落兵才是实力；而其所以能长驱者，在内地无兵，不在边将有兵。<br>本朝不学唐之防边将，学的是<b>不许边兵向内走</b>：外面随你打，往里走一步就是反。</div>
+
+<h3>穷边与富边</h3>
+<p>安西、北庭是沙碛，造反所得唯有沙；<b>安东（黑土、海贸、近京畿）与南洋（三佛齐咽喉、海路之利）则不然</b>。故穷边可以军功爵位羁縻，富边须别法：都护与舰队提督互不统属、经略招讨使由中央另派而非大都护自辟、安东南洋大都护须自中枢外放。</p>
+<div class="quote"><b>或问：西域诸国犹存，丝路犹通，安西大都护手握过境商税，何得谓之「唯有沙」？</b><br>
+答：绿洲之富在通商，而<b>通商之利须两端有市</b>。安西若反，东端之市即闭，商道随之而断，所据者仍旧是沙。<br>
+故安西之富，<b>以不反为前提</b>——反则其富自灭。此非人力所锁，乃地势所锁，比任何制度都硬。</div>
+<p>惟三互法已含籍贯回避，且政区与军区不重合（<b>营州≠安东都护府</b>——黑土海贸之利在营州刺史，大都护所管乃外藩与女真诸部），家底不在拿兵的人手里。</p>`;
+
+/* 交互 */
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+b.dataset.tab).classList.add('active');
+}));
+document.getElementById('hide-supl').addEventListener('change',e=>document.body.classList.toggle('hide-supl',e.target.checked));
+document.getElementById('search').addEventListener('input',function(){
+  const q=this.value.trim();
+  const rows=[...document.querySelectorAll('.tree-row')];
+  if(!q){rows.forEach(r=>r.style.display='');return;}
+  const hit=new Set();
+  (function walk(n){
+    const m=n.name.includes(q)||(n.officers||[]).some(o=>o.n.includes(q)||(o.note||'').includes(q));
+    if(m){(nodePathMap.get(n)||[]).forEach(p=>hit.add(p.name));}
+    (n.children||[]).forEach(walk);
+  })(GUANZHI);
+  rows.forEach(r=>{r.style.display=hit.has(r.dataset.nodeName)?'':'none';
+    const nx=r.nextElementSibling;
+    if(nx&&nx.classList.contains('tree-children')){nx.classList.remove('collapsed');const t=r.querySelector('.tree-toggle');if(t&&t.textContent.trim())t.textContent='▾';}
+  });
+});
+</script>
+<a href="../index.html" id="sx-back" style="position:fixed;left:12px;bottom:14px;z-index:2147483000;font:600 14px/1 'Songti SC','Noto Serif CJK SC','SimSun',serif;color:#f5efe3;background:#a63a2b;padding:9px 13px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">‹ 崇祯四百年谱</a>
+</body>
+</html>
