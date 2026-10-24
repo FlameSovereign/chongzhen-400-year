@@ -92,6 +92,121 @@
   .sc-desc{font-size:11px;color:var(--ink-2);margin-top:4px;line-height:1.5}
   .today{display:inline-block;background:rgba(122,47,30,.12);border:1px solid rgba(122,47,30,.5);
     color:var(--rev);font-size:11px;padding:1px 6px;margin-left:8px}
+
+  /* ===== 窄屏适配：以下规则只在宽度 < 1024px 时生效，桌面版不受影响 ===== */
+  /* 平板（761–1023px 且不太矮）：保留左右分栏，页眉放不下时折成两行，正文顶部随页眉高度走 */
+  /* 媒体查询一律限定 screen：打印时按纸宽求值，不能误入窄屏档 */
+  @media screen and (min-width:760.02px) and (max-width:1023.98px) and (min-height:500.02px){
+    #header{height:auto;min-height:60px;flex-wrap:wrap;padding:8px 18px;row-gap:8px}
+    #header .subtitle{flex:0 0 auto;white-space:nowrap}
+    #header .right{flex:0 0 auto}
+    #header .right label{white-space:nowrap;display:inline-flex;align-items:center;gap:3px;min-height:36px;cursor:pointer}
+    #header input[type=text]{height:36px;font-size:16px;padding:6px 9px}
+    #main{top:var(--zg-hdr,92px)}
+    #tabs button{min-height:38px;padding:8px 4px;letter-spacing:.06em}
+    .pane{padding-bottom:64px}
+    .tree-row{min-height:36px}
+    .tree-toggle{flex:0 0 24px;width:24px;align-self:stretch;display:flex;align-items:center;justify-content:center}
+    #sx-back{padding-top:11px!important;padding-bottom:11px!important}
+  }
+  /* 手机（≤760px，或宽 < 1024px 且高 ≤ 500px 的横屏）：主从两级，详情全屏滑入 */
+  @media screen and (max-width:760px),screen and (max-width:1023.98px) and (max-height:500px){
+    #header{height:auto;flex-wrap:wrap;align-items:center;padding:6px 12px;column-gap:8px;row-gap:3px}
+    #header::after{content:"";order:3;flex:0 0 100%;height:0}
+    #header h1{order:1;font-size:18px;letter-spacing:.2em;line-height:1.3}
+    #header .right{display:contents}
+    #header input[type=text]{order:2;flex:1 1 120px;min-width:0;width:auto;height:38px;padding:6px 10px;font-size:16px}
+    #header .legend-tag{order:4;font-size:12px;padding:2px 7px}
+    #header .right label{order:5;display:inline-flex;align-items:center;gap:5px;min-height:36px;font-size:13px;white-space:nowrap;cursor:pointer}
+    #header .right label input{width:18px;height:18px;margin:0;accent-color:var(--gold)}
+    #zg-sub-btn{order:6;margin-left:auto;display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 10px;
+      font-family:inherit;font-size:13px;letter-spacing:.12em;color:var(--ink);cursor:pointer;
+      background:rgba(255,250,230,.7);border:1.5px solid var(--ink-2)}
+    #zg-sub-btn,#zg-back{-webkit-tap-highlight-color:rgba(163,124,68,.25)}
+    #zg-sub-btn:focus-visible,#zg-back:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+    #zg-dbar:focus,.tree-row:focus{outline:none}
+    #zg-sub-btn .zg-caret{font-size:11px;letter-spacing:0;transition:transform .2s}
+    #header.zg-sub-open #zg-sub-btn .zg-caret{transform:rotate(180deg)}
+    #header .subtitle{order:7;flex:0 0 100%;display:none;border-left:none;border-top:1px dashed var(--ink-2);
+      padding:6px 0 4px;font-size:12px;letter-spacing:.08em;line-height:1.7}
+    #header.zg-sub-open .subtitle{display:block}
+
+    #main{top:var(--zg-hdr,92px);z-index:auto}
+    #left{width:auto;min-width:0;flex:1 1 auto;border-right:none}
+    #tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex:none}
+    #tabs::-webkit-scrollbar{display:none}
+    #tabs button{flex:1 0 auto;min-height:40px;padding:8px 4px;letter-spacing:.06em}
+    .pane{padding:12px 12px 80px;overscroll-behavior:contain}
+    .pane p,.pane ul,.quote{font-size:14px}
+    table.t{font-size:13px;overflow-wrap:anywhere}
+    table.t th,table.t td{padding:5px 5px}
+
+    .tree-node{font-size:15px}
+    .tree-row{min-height:40px;padding:0 4px 0 0}
+    .tree-toggle{flex:0 0 30px;width:30px;align-self:stretch;display:flex;align-items:center;justify-content:center;font-size:13px}
+    .tree-rank,.tree-tag{flex:none}
+    .tree-children{margin-left:14px}
+    /* 树顶的「皇帝」总览行：样式随职官树的行，下以虚线与诸衙门隔开 */
+    #zg-root{display:flex;align-items:center;width:100%;min-height:40px;margin:0 0 3px;padding:0 4px 0 0;
+      font-family:inherit;font-size:15px;line-height:1.7;font-weight:normal;letter-spacing:normal;color:var(--ink);text-align:left;
+      cursor:pointer;background:transparent;border:0;border-bottom:1px dashed rgba(74,53,34,.4);border-radius:0;
+      -webkit-tap-highlight-color:rgba(163,124,68,.25)}
+    #zg-root .tree-toggle{color:var(--gold)}
+    #zg-root:hover{background:rgba(180,140,80,.18)}
+    #zg-root.selected{background:rgba(180,140,80,.32);font-weight:bold}
+    #zg-root:focus{outline:none}
+    #zg-root:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+
+    /* 详情：全屏面板，顶部固定「‹ 返回」条 */
+    #zg-dbar{display:flex;align-items:center;gap:10px;position:fixed;top:0;left:0;right:0;height:48px;z-index:31;padding:0 12px;
+      background:linear-gradient(180deg,#f4e7c4 0%,#e6d5ad 100%);border-bottom:2px solid var(--ink);box-shadow:0 2px 8px var(--shadow)}
+    #zg-back{flex:none;min-height:36px;padding:0 12px;font-family:inherit;font-size:15px;font-weight:bold;letter-spacing:.12em;
+      color:var(--ink);background:rgba(255,250,230,.7);border:1.5px solid var(--ink-2);cursor:pointer}
+    #zg-dtitle{flex:1;min-width:0;font-size:16px;font-weight:bold;letter-spacing:.16em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #detail{position:fixed;top:48px;left:0;right:0;bottom:0;z-index:30;padding:16px 16px 84px;
+      background:linear-gradient(180deg,#f6ebcd 0%,#ecdcb5 100%);overscroll-behavior:contain}
+    #zg-dbar,#detail{transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+    body.zg-open #zg-dbar,body.zg-open #detail{transform:none;visibility:visible;transition:transform .25s ease}
+    body.zg-noanim #zg-dbar,body.zg-noanim #detail{transition:none!important}
+    #detail h2{font-size:21px;letter-spacing:.16em;line-height:1.45}
+    #detail .desc{font-size:14px}
+    table.officer-table{font-size:13px;overflow-wrap:anywhere}
+    table.officer-table th,table.officer-table td{padding:5px 6px}
+    table.officer-table .col-rank{width:auto;white-space:normal;word-break:keep-all;overflow-wrap:normal}
+    .sub-children{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+    .sub-child{min-height:44px;padding:9px 10px}
+
+    /* 返回首页的小红签：缩到角落，滚动区底部留白，不长期压住内容 */
+    #sx-back{left:10px!important;bottom:10px!important;font-size:13px!important;padding:12px!important}
+  }
+  @media screen and (max-width:350px){
+    #tabs button{padding:8px 3px;font-size:12px;letter-spacing:0}
+    #tabs button+button{box-shadow:inset 1px 0 rgba(74,53,34,.22)}
+  }
+  /* 窄手机：职官表的「说明」另起整行，免得四栏挤成细条 */
+  @media screen and (max-width:480px){
+    table.officer-table,table.officer-table thead,table.officer-table tbody{display:block}
+    table.officer-table{border-top:1px solid var(--ink-2)}
+    table.officer-table tr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 2.4em;
+      border-left:1px solid rgba(74,53,34,.4);border-bottom:1px solid rgba(74,53,34,.4)}
+    table.officer-table thead tr{border-color:var(--ink-2)}
+    table.officer-table th,table.officer-table td{border:0;border-right:1px solid rgba(74,53,34,.4)}
+    table.officer-table th{border-right-color:var(--ink-2)}
+    table.officer-table th:nth-child(4),table.officer-table td.col-note{grid-column:1/-1}
+    table.officer-table th:nth-child(4){border-top:1px solid var(--ink-2)}
+    table.officer-table td.col-note{border-top:1px dashed rgba(74,53,34,.3)}
+    table.officer-table td.col-note:empty{display:none}
+    table.officer-table .col-name,table.officer-table .col-rank,table.officer-table .col-role{width:auto}
+  }
+  /* 手机横屏（够宽）：页眉排成一行 */
+  @media screen and (min-width:600px) and (max-width:760px),screen and (min-width:600px) and (max-width:1023.98px) and (max-height:500px){
+    #header::after{display:none}
+    #zg-sub-btn{order:2;margin-left:0}
+    #header input[type=text]{order:6;flex:1 1 140px}
+  }
+  @media screen and (max-width:760px) and (prefers-reduced-motion:reduce),screen and (max-width:1023.98px) and (max-height:500px) and (prefers-reduced-motion:reduce){
+    #zg-dbar,#detail,#zg-sub-btn .zg-caret{transition:none!important}
+  }
 </style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='6' fill='%23a63a2b'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f5efe3' font-family='serif'%3E%E6%98%8E%3C/text%3E%3C/svg%3E">
 </head>
@@ -107,6 +222,7 @@
     <label><input type="checkbox" id="hide-supl"> 只看原设定</label>
     <input type="text" id="search" placeholder="搜索官名 / 衙门">
   </div>
+  <button type="button" id="zg-sub-btn" hidden aria-expanded="false" aria-label="纲要">纲要<span class="zg-caret" aria-hidden="true">▾</span></button>
 </div>
 
 <div id="main">
@@ -120,7 +236,7 @@
       <button data-tab="bing">兵　柄</button>
     </div>
 
-    <div class="pane active" id="pane-tree"></div>
+    <div class="pane active" id="pane-tree"><button type="button" id="zg-root" hidden><span class="tree-toggle" aria-hidden="true"> · </span><span class="tree-name"></span><span class="tree-rank"></span></button></div>
 
     <div class="pane" id="pane-today">
       <h2>今制对照</h2>
@@ -184,6 +300,7 @@
     <div class="pane" id="pane-bing"></div>
   </div>
 
+  <div id="zg-dbar" hidden tabindex="-1"><button type="button" id="zg-back" aria-label="返回职官树">‹ 返回</button><div id="zg-dtitle"></div></div>
   <div id="detail"></div>
 </div>
 
@@ -1229,6 +1346,190 @@ document.getElementById('search').addEventListener('input',function(){
     if(nx&&nx.classList.contains('tree-children')){nx.classList.remove('collapsed');const t=r.querySelector('.tree-toggle');if(t&&t.textContent.trim())t.textContent='▾';}
   });
 });
+</script>
+<script>
+/* ===== 窄屏适配（宽度 ≥ 1024px 时以下逻辑一概不动） ===== */
+(function(){
+  /* 与 CSS 一致，只认 screen；打印时一概不动 */
+  var mqPhone=window.matchMedia('screen and (max-width:760px),screen and (max-width:1023.98px) and (max-height:500px)');
+  var mqNarrow=window.matchMedia('screen and (max-width:1023.98px)');
+  var mqPrint=window.matchMedia('print');
+  var root=document.documentElement,body=document.body;
+  var header=document.getElementById('header'),left=document.getElementById('left');
+  var detail=document.getElementById('detail'),tree=document.getElementById('pane-tree');
+  var bar=document.getElementById('zg-dbar'),back=document.getElementById('zg-back');
+  var dtitle=document.getElementById('zg-dtitle'),subBtn=document.getElementById('zg-sub-btn');
+  var OPEN='zg-open';
+  function isPhone(){return mqPhone.matches;}
+  function isOpen(){return body.classList.contains(OPEN);}
+  function ours(){return !!(history.state&&history.state.zgDetail);}
+  /* 去掉类名/样式后留下的空属性一并删掉，DOM 回到原样 */
+  function tidy(el,attr){if(el.getAttribute(attr)==='')el.removeAttribute(attr);}
+
+  /* 页眉高度会随换行变化：同步给正文的 top */
+  function syncHeader(){
+    if(mqNarrow.matches) root.style.setProperty('--zg-hdr',header.getBoundingClientRect().height+'px');
+    else if(root.style.getPropertyValue('--zg-hdr')){root.style.removeProperty('--zg-hdr');tidy(root,'style');}
+  }
+  if(window.ResizeObserver) new ResizeObserver(syncHeader).observe(header);
+
+  function setTitle(){
+    var h=detail.querySelector('h2'),t='';
+    if(h) t=(h.firstChild&&h.firstChild.nodeType===3)?h.firstChild.nodeValue:h.textContent;
+    dtitle.textContent=t;
+  }
+  /* 根节点「皇帝」的总览（含全页引言）原只在载入时显示于右栏；手机上详情默认收起、树里又只列其下属，
+     故在树顶补一行入口（仅手机档显示），名号取自数据本身 */
+  var rootBtn=document.getElementById('zg-root');
+  rootBtn.querySelector('.tree-name').textContent=GUANZHI.name;
+  rootBtn.querySelector('.tree-rank').textContent=GUANZHI.rank||'';
+  function showsRoot(){
+    var h=detail.querySelector('h2');
+    return !!(h&&h.firstChild&&h.firstChild.nodeType===3&&h.firstChild.nodeValue===GUANZHI.name);
+  }
+  new MutationObserver(function(){
+    if(isPhone())setTitle();
+    if(!showsRoot()&&rootBtn.classList.contains('selected')){rootBtn.classList.remove('selected');tidy(rootBtn,'class');}
+  }).observe(detail,{childList:true});
+
+  /* 历史记录：面板打开时当前项是本页推入的 {zgDetail:1}；面板关着时绝不让这种项停在当前。
+     回退统一走 stepBack，并防止一次操作连退两步 */
+  var backTimer=0;
+  function stepBack(){
+    if(backTimer) return;
+    backTimer=setTimeout(function(){backTimer=0;},1000);
+    history.back();
+  }
+
+  var SEL='#zg-root.selected,.tree-row.selected';
+  function keepSelectedInView(){
+    var row=tree.querySelector(SEL);
+    if(!row||!row.offsetParent) return;
+    var r=row.getBoundingClientRect(),p=tree.getBoundingClientRect();
+    if(r.top<p.top||r.bottom>p.bottom) tree.scrollTop+=r.top-p.top-(p.height-r.height)/2;
+  }
+  /* 面板关上后把焦点还给选中的那一行（临时 tabindex，失焦即撤） */
+  function focusSelectedRow(){
+    var row=tree.querySelector(SEL);
+    if(!row||!row.offsetParent) return;
+    if(row.tabIndex<0&&!row.hasAttribute('tabindex')){
+      row.setAttribute('tabindex','-1');
+      row.addEventListener('blur',function(){row.removeAttribute('tabindex');},{once:true});
+    }
+    try{row.focus({preventScroll:true});}catch(e){}
+  }
+  function setInert(on){
+    [header,left].forEach(function(el){if(on)el.setAttribute('inert','');else el.removeAttribute('inert');});
+  }
+  function openPanel(push){
+    setTitle();
+    detail.scrollTop=0;
+    if(isOpen()) return;
+    body.classList.add(OPEN);
+    setInert(true);
+    if(push){try{
+      if(ours()) history.replaceState({zgDetail:1},'');
+      else history.pushState({zgDetail:1},'');
+    }catch(e){}}
+    /* 焦点给面板顶条本身（不画焦点框），键盘再按 Tab 即到「返回」 */
+    try{bar.focus({preventScroll:true});}catch(e){}
+  }
+  function closePanel(restoreFocus){
+    if(!isOpen()) return;
+    body.classList.remove(OPEN);
+    tidy(body,'class');
+    setInert(false);
+    keepSelectedInView();
+    if(restoreFocus) focusSelectedRow();
+  }
+  function closeByUser(){
+    if(!isOpen()) return;
+    var pop=ours();
+    closePanel(true);
+    if(pop) stepBack();
+  }
+
+  /* 点职官树的行（▸ 折叠钮除外）：原逻辑已写好 #detail，这里只负责打开全屏面板 */
+  tree.addEventListener('click',function(e){
+    if(!isPhone()) return;
+    var row=e.target.closest('.tree-row'); if(!row) return;
+    var nx=row.nextElementSibling,has=!!(nx&&nx.classList.contains('tree-children'));
+    if(has&&e.target.closest('.tree-toggle')) return;
+    openPanel(true);
+  });
+  /* 面板里点「下属机构」：原 onclick 已换了内容，这里回到顶部，不新增历史记录 */
+  detail.addEventListener('click',function(e){
+    if(!isPhone()||!isOpen()||!e.target.closest('.sub-child')) return;
+    detail.scrollTop=0;
+    if(ours()){try{history.replaceState({zgDetail:1},'');}catch(err){}}
+  });
+  back.addEventListener('click',closeByUser);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&isOpen()) closeByUser();
+  });
+  window.addEventListener('popstate',function(){
+    clearTimeout(backTimer);backTimer=0;
+    if(ours()){
+      if(isPhone()){if(!isOpen()) openPanel(false);}
+      else stepBack();   /* 非手机档落到面板历史项（如按「前进」）：跨过去 */
+    }else if(isOpen()) closePanel(true);
+  });
+
+  rootBtn.addEventListener('click',function(){
+    if(!isPhone()) return;
+    showDetail(GUANZHI);
+    document.querySelectorAll('.tree-row.selected').forEach(function(r){r.classList.remove('selected');});
+    rootBtn.classList.add('selected');
+    openPanel(true);
+  });
+  /* 搜索时与原逻辑同理：有任何命中（命中者皆在其下）或命中其本身才显示 */
+  document.getElementById('search').addEventListener('input',function(){
+    var q=this.value.trim();
+    var show=!q||GUANZHI.name.indexOf(q)>=0||[].some.call(tree.querySelectorAll('.tree-row'),function(r){return r.style.display!=='none';});
+    rootBtn.style.display=show?'':'none';
+    tidy(rootBtn,'style');
+  });
+
+  subBtn.addEventListener('click',function(){
+    var on=header.classList.toggle('zg-sub-open');
+    subBtn.setAttribute('aria-expanded',on?'true':'false');
+    syncHeader();
+  });
+
+  /* 进入手机档的那一帧不放滑出动画（否则旧的详情栏会从树上滑过） */
+  function noAnim(){
+    body.classList.add('zg-noanim');
+    var raf=window.requestAnimationFrame||function(f){return setTimeout(f,16);};
+    raf(function(){raf(function(){body.classList.remove('zg-noanim');tidy(body,'class');});});
+  }
+  /* 断点切换（旋转、拉宽窗口）：离开手机档时收起一切手机专属状态 */
+  function onTier(){
+    if(mqPrint.matches) return;
+    syncHeader();
+    if(!isPhone()){
+      if(isOpen()){var pop=ours();closePanel(false);if(pop)stepBack();}
+      else if(ours()) stepBack();
+      if(header.classList.contains('zg-sub-open')){
+        header.classList.remove('zg-sub-open');tidy(header,'class');subBtn.setAttribute('aria-expanded','false');
+      }
+      var a=document.activeElement;
+      if(a&&(a===rootBtn||a.classList&&a.classList.contains('tree-row'))) a.blur();
+    }else{
+      setTitle();
+      if(ours()&&!isOpen()) stepBack();
+      noAnim();
+    }
+  }
+  [mqPhone,mqNarrow].forEach(function(m){
+    if(m.addEventListener) m.addEventListener('change',onTier); else if(m.addListener) m.addListener(onTier);
+  });
+  window.addEventListener('resize',syncHeader);
+  window.addEventListener('orientationchange',onTier);
+
+  /* 刷新或不经 bfcache 回到本页时若停在面板历史项上（面板本是关的）：退回其前一项，免得多按一次「后退」 */
+  if(ours()) stepBack();
+  onTier();
+})();
 </script>
 <a href="../index.html" id="sx-back" style="position:fixed;left:12px;bottom:14px;z-index:2147483000;font:600 14px/1 'Songti SC','Noto Serif CJK SC','SimSun',serif;color:#f5efe3;background:#a63a2b;padding:9px 13px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">‹ 崇祯四百年谱</a>
 </body>
